@@ -6,8 +6,6 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 
 float search_point(float A, float B, float C, float D, float m, float n, float p, float H);
 
-//float* vertex_complection(float x_t, float y_t, float z_t);
-
 void Draw_sphere_traectory(float x_sp, float y_sp, float r);
 
 struct_inter Not_intersection(float pitch, float yaw, float H);
