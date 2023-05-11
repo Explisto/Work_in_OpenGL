@@ -1,3 +1,5 @@
+// Подключение заголовочного файла
+#include "Function_OpenGL.h"
 
 typedef struct struct_position_camera {
     float x = 5;

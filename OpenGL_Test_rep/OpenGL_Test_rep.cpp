@@ -1,28 +1,19 @@
 ﻿// OpenGL_Test_rep.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
 
-// Подключение библиотек
-
-#include "glew.h" 
-#include "glfw3.h"
-#include <iostream>
-#include <windows.h>
-#include <gl/gl.h>
-
-#define _USE_MATH_DEFINES
-#include <math.h>
+// Подключение заголовочного файла
+#include "Function_OpenGL.h"
 
  // Подключение модулей
 #include "Math_OpenGL.cpp"
 #include "Interface_OpenGL.cpp"
 #include "Camera_OpenGL.cpp"
-
-// Подключение заголовочных файлов
-#include "Function_OpenGL.h"
+#include "Look_world_OpenGL.cpp"
 
 using namespace std;
 
 //
+
 // Раздел с описанием глобальных констант
 //
 // Ускорение свободного падения
@@ -43,118 +34,11 @@ struct_turn turn;
 // Структура для координат точки пересечения окружности виража ЛА и сферы
 struct_contact contact;
 
-
-/**********************************************************************************
-* @brief Генерация плоскости, на которой находится полусфера
-* @return Ничего
-**********************************************************************************/
-void Show_plane()
-{
-    // Инициализация элементов плоскости - двух линий
-    float vert_line_1[] = { 0,0,0, 0,-11,0 };
-    float vert_line_2[] = { 0,0,0, 11,0,0 };
-
-    // Метка, что будет использован массив вершин
-    glEnableClientState(GL_VERTEX_ARRAY);
-    // Сохранение данных из массива вершин
-    glVertexPointer(3, GL_FLOAT, 0, &vert_line_1);
-
-    // Цикл создания линий сетки
-    for (int count_line_1 = 0; count_line_1 < 12; count_line_1++)
-    {
-        // Сохранение текущей матрицы в стек
-        glPushMatrix();
-        // Установка цвета примитива
-        glColor3f(0, 1, 0);
-        // Перенос координат линии
-        glTranslatef(count_line_1, 0, 0);
-        // Создание примитива в виде линии
-        glDrawArrays(GL_LINE_STRIP, 0, 2);
-        // Возвращение матрицы из стека
-        glPopMatrix();
-    }
-
-    // Метка, что массив вершин больше не будет использоваться
-    glDisableClientState(GL_VERTEX_ARRAY);
-
-    // Метка, что будет использован массив вершин
-    glEnableClientState(GL_VERTEX_ARRAY);
-    // Сохранение данных из массива вершин
-    glVertexPointer(3, GL_FLOAT, 0, &vert_line_2);
-    
-    for (int count_line_2 = 0; count_line_2 < 12; count_line_2++)
-    {
-        // Сохранение текущей матрицы в стек
-        glPushMatrix();
-        // Установка цвета примитива
-        glColor3f(1, 0.8, 0);
-        // Перенос координат линии
-        glTranslatef(0, -count_line_2, 0);
-        // Создание примитива в виде линии
-        glDrawArrays(GL_LINE_STRIP, 0, 2);
-        // Возвращение матрицы из стека
-        glPopMatrix();
-    }
-    // Метка, что массив вершин больше не будет использоваться
-    glDisableClientState(GL_VERTEX_ARRAY);
-}
-
-/***********************************************************************************
- * @brief Создание осей системы координат
- * @return Ничего
-***********************************************************************************/
-void Axe()
-{
-    // Массивы точек, устанавливающие оси СК
-    float vert_x[] = { 0,0,0, 12,0,0 };
-    float vert_y[] = { 0,0,0, 0,-12,0 };
-    float vert_z[] = { 0,0,0, 0,0,12 };
-
-    // Ширина линий
-    glLineWidth(10);
-
-    // Метка, что будет использован массив вершин
-    glEnableClientState(GL_VERTEX_ARRAY);
-    // Сохранение данных из массива вершин
-    glVertexPointer(3, GL_FLOAT, 0, &vert_x);
-    
-    // Сохранение текущей матрицы в стек
-    glPushMatrix();
-    // Установка цвета примитива
-    glColor3f(0, 0, 1);
-    // Создание примитива в виде линии
-    glDrawArrays(GL_LINE_STRIP, 0, 2);
-    // Возвращение матрицы из стека
-    glPopMatrix();
-
-    // Далее - аналогично для остальных двух осей
-    //******************************************
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, &vert_y);
-
-    glPushMatrix();
-    glColor3f(0, 0, 1);
-    glDrawArrays(GL_LINE_STRIP, 0, 2);
-    glPopMatrix();
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, &vert_z);
-
-    glPushMatrix();
-    glColor3f(0, 0, 1);
-    glDrawArrays(GL_LINE_STRIP, 0, 2);
-    glPopMatrix();
-    //******************************************
-    
-    // Ширина линий
-    glLineWidth(1);
-}
-
 /***********************************************************************************
  * @brief Создание траектории полета ЛА
  * @return Ничего
 ***********************************************************************************/
-void Aircraft_turn(float H)
+void Aircraft_traectory(float H)
 {
     // Настройка вершин
     float vert_x[] = { 0,0,H, inter.x, inter.y, inter.z };
@@ -189,7 +73,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
 {
 
     // Массив точек: первая - на расстоянии радиуса виража от начальной точки, вторая - центр окружности виража ЛА
-    float vert_1[] = {0, 0, H + R_turn / sin((90-pitch) * M_PI / 180), inter.x, inter.y, inter.z + R_turn / sin((90 - pitch) * M_PI / 180)};
+    float vert_1[] = { 0, 0, H + R_turn / sin((90 - pitch) * M_PI / 180), inter.x, inter.y, inter.z + R_turn / sin((90 - pitch) * M_PI / 180) };
 
     // Точки для построения окружности
     float x_rotate, y_rotate, z_rotate = 0;
@@ -216,39 +100,39 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     // Установка размера точки - начала ухода ЛА
     glPointSize(20);
     glBegin(GL_POINTS);
-        
-        // Установка цвета примитива
-        glColor3d(0, 1, 0);
-        // Координаты точки начала ухода ЛА
-        glVertex3d(track.x, track.y, track.z);
+
+    // Установка цвета примитива
+    glColor3d(0, 1, 0);
+    // Координаты точки начала ухода ЛА
+    glVertex3d(track.x, track.y, track.z);
 
     glEnd();
 
     // Установка размера точки - точка пересечения сфер
     glPointSize(20);
     glBegin(GL_POINTS);
-        
-        // Установка цвета примитива
-        glColor3d(0.8, 1, 0.5);
-        // Координаты точки контакта сфер
-        glVertex3d(contact.x, contact.y, contact.z);
+
+    // Установка цвета примитива
+    glColor3d(0.8, 1, 0.5);
+    // Координаты точки контакта сфер
+    glVertex3d(contact.x, contact.y, contact.z);
 
     glEnd();
 
     // Установка размера точки - точка центра окружности ухода ЛА
     glPointSize(20);
     glBegin(GL_POINTS);
-        
-        // Установка цвета примитива
-        glColor3d(1, 0.8, 0);
-        // Координаты центра окружности ухода ЛА
-        glVertex3d(turn.x, turn.y, turn.z);
-    
+
+    // Установка цвета примитива
+    glColor3d(1, 0.8, 0);
+    // Координаты центра окружности ухода ЛА
+    glVertex3d(turn.x, turn.y, turn.z);
+
     glEnd();
 
     // Построение траектории ухода ЛА
     glColor3f(0.1f, 1.0f, 0.2f);
-    
+
     // Сохранение текущей матрицы в стек
     glPushMatrix();
 
@@ -261,11 +145,11 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     // Поворот окружности на угол танагажа
     glRotatef(-pitch - 10, 0.0f, 0.0f, 1.0f);
     //glRotatef(10, 0.0f, 0.0f, 1.0f);
-    
+
 
     // Начало рисования окружности - траектории ухода ЛА
     glBegin(GL_LINE_STRIP);
-    
+
     // Цикл - нахождение точек окружности
     for (int count_circle = 0; count_circle < 60; count_circle++)
     {
@@ -305,235 +189,8 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     }
     // Возвращение матрицы из стека
     glPopMatrix();
-    
 
-}
 
-/***********************************************************************************
- * @brief Создание стрелок для осей координат
- * @return Ничего
-***********************************************************************************/
-void Cursors()
-{
-    // Настройка координат пирамид
-    float pyramid_x[] = { 13, 0, 0, 12, 0.5, -0.5, 12, -0.5, -0.5, 12, -0.5, 0.5, 12, 0.5, 0.5, 12, 0.5, -0.5};
-    float pyramid_y[] = { 0, 0, 13, -0.5, 0.5, 12, -0.5, -0.5, 12, 0.5, -0.5, 12, 0.5, 0.5, 12, -0.5, 0.5, 12};
-    float pyramid_z[] = { 0, -13, 0, 0.5, -12, -0.5, -0.5, -12, -0.5, -0.5, -12, 0.5, 0.5, -12, 0.5, 0.5, -12, -0.5};
-
-    // Метка, что будет использован массив вершин
-    glEnableClientState(GL_VERTEX_ARRAY);
-    // Сохранение данных из массива вершин для первой пирамиы
-    glVertexPointer(3, GL_FLOAT, 0, &pyramid_x);
-    // Установка цвета примитива
-    glColor3f(0.5f, 0.5f, 0.1f);
-    // Создание примитива в виде треугольника
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
-
-    // Далее - аналогично для остальных двух осей
-    //*****************************************************
-    glVertexPointer(3, GL_FLOAT, 0, &pyramid_y);
-    glColor3f(0.5f, 0.5f, 0.1f);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
-
-    glVertexPointer(3, GL_FLOAT, 0, &pyramid_z);
-    glColor3f(0.5f, 0.5f, 0.1f);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
-    //*****************************************************
-
-    // Метка об отключении использования массива вершин
-    glDisableClientState(GL_VERTEX_ARRAY);
-}
-
-/***********************************************************************************
- * @brief Создание полусферы и сетки для нее
- * @param x_sp Координата центра сферы по оси oX
- * @param y_sp Координата центра сферы по оси oY
- * @param r Радиус сферы
- * @return Ничего
-***********************************************************************************/
-void Draw_sphere(float x_sp, float y_sp, float r)
-{
-
-    float di = 0.02;
-    float dj = 0.04;
-    float db = di * 2 * M_PI;
-    float da = dj * M_PI;
-    float p_1, p_2, p_3, p_4;
-
-    // Горизонтальная плоскость
-    for (float i = 0.0; i < 1.0; i += di)
-    {
-        // Вертикальная плоскость
-        for (float j = 0.5; j < 1.0; j += dj)
-        {
-            float b = i * 2 * M_PI;
-            float a = (j - 0.5) * M_PI;
-
-            glColor3f(1.0f, 1.0f, 0.0f);
-            // Нормализация координат вектора
-            glNormal3f(
-                x_sp + cos(a + da / 2) * cos(b + db / 2),
-                y_sp + cos(a + da / 2) * sin(b + db / 2),
-                sin(a + da / 2));
-
-            // Создание четырехугольника для полусферы
-            glBegin(GL_QUADS);
-
-            // Нахождение координат точки P1
-
-            glVertex3f(
-                x_sp + r * cos(a) * cos(b),
-                y_sp + r * cos(a) * sin(b),
-                r * sin(a));
-            // Нахождение координат точки P2
-
-            glVertex3f(
-                x_sp + r * cos(a) * cos(b + db),
-                y_sp + r * cos(a) * sin(b + db),
-                r * sin(a));
-            // Нахождение координат точки P3
-
-            glVertex3f(
-                x_sp + r * cos(a + da) * cos(b + db),
-                y_sp + r * cos(a + da) * sin(b + db),
-                r * sin(a + da));
-            // Нахождение координат точки P4
-
-            glVertex3f(
-                x_sp + r * cos(a + da) * cos(b),
-                y_sp + r * cos(a + da) * sin(b),
-                r * sin(a + da));
-            glEnd();
-
-            // Создание сетки
-            glBegin(GL_LINE_STRIP);
-
-            glColor3f(1.0f, 0.0f, 0.0f);
-            // Для точки P1
-
-            glVertex3f(
-                x_sp + r * cos(a) * cos(b),
-                y_sp + r * cos(a) * sin(b),
-                r * sin(a));
-            // Для точки P2
-
-            glVertex3f(
-                x_sp + r * cos(a) * cos(b + db),
-                y_sp + r * cos(a) * sin(b + db),
-                r * sin(a));
-            // Для точки P3
-
-            glVertex3f(
-                x_sp + r * cos(a + da) * cos(b + db),
-                y_sp + r * cos(a + da) * sin(b + db),
-                r * sin(a + da));
-            // Для точки P4
-
-            glVertex3f(
-                x_sp + r * cos(a + da) * cos(b),
-                y_sp + r * cos(a + da) * sin(b),
-                r * sin(a + da));
-            glEnd();
-            
-        }
-    }
-}
-
-/***********************************************************************************
- * @brief Создание сферы на траектории ЛА
- * @param x_sp Координата центра сферы по оси oX
- * @param y_sp Координата центра сферы по оси oY
- * @param r Радиус сферы
- * @return Ничего
-***********************************************************************************/
-void Draw_sphere_traectory(float x_sp, float y_sp, float r)
-{
-
-    float di = 0.02;
-    float dj = 0.04;
-    float db = di * 2 * M_PI;
-    float da = dj * M_PI;
-    float p_1, p_2, p_3, p_4;
-
-    // Горизонтальная плоскость
-    for (float i = 0.0; i < 1.0; i += di)
-    {
-        // Вертикальная плоскость
-        for (float j = 0.0; j < 1.0; j += dj)
-        {
-            float b = i * 2 * M_PI;
-            float a = (j - 0.5) * M_PI;
-
-            glColor3f(1.0f, 0.0f, 0.0f);
-            // Нормализация координат вектора
-            glNormal3f(
-                x_sp + cos(a + da / 2) * cos(b + db / 2),
-                y_sp + cos(a + da / 2) * sin(b + db / 2),
-                sin(a + da / 2));
-
-            // Создание четырехугольника для полусферы
-            glBegin(GL_QUADS);
-
-            // Нахождение координат точки P1
-
-            glVertex3f(
-                x_sp + r * cos(a) * cos(b),
-                y_sp + r * cos(a) * sin(b),
-                r * sin(a));
-            // Нахождение координат точки P2
-
-            glVertex3f(
-                x_sp + r * cos(a) * cos(b + db),
-                y_sp + r * cos(a) * sin(b + db),
-                r * sin(a));
-            // Нахождение координат точки P3
-
-            glVertex3f(
-                x_sp + r * cos(a + da) * cos(b + db),
-                y_sp + r * cos(a + da) * sin(b + db),
-                r * sin(a + da));
-            // Нахождение координат точки P4
-
-            glVertex3f(
-                x_sp + r * cos(a + da) * cos(b),
-                y_sp + r * cos(a + da) * sin(b),
-                r * sin(a + da));
-            glEnd();
-
-        }
-    }
-}
-
-/***********************************************************************************
- * @brief Функция находит угол между двумя векторами
- * @param x_1, y_1, z_1 - координаты первого вектора
- * @param x_2, y_2, z_2 - координаты второго вектора
- * @return Угол между двумя векторами в градусах
-***********************************************************************************/
-float Angle_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2)
-{
-    float cos_angle;
-
-    // Нахождение угла между двумя векторами
-    cos_angle = (x_1 * x_2 + y_1 * y_2 + z_1 * z_2) / ((sqrt(pow(x_1, 2) + pow(y_1, 2) + pow(z_1, 2))) * sqrt(pow(x_2, 2) + pow(y_2, 2) + pow(z_2, 2)));
-
-    return acos(cos_angle) * 180 / M_PI;
-}
-
-/***********************************************************************************
- * @brief Функция находит расстояние между двумя точками
- * @param x_1, y_1, z_1 - координаты первой точки
- * @param x_2, y_2, z_2 - координаты второй точки
- * @return Расстояние между двумя точками
-***********************************************************************************/
-float Disrance_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2)
-{
-    float distance;
-
-    // Нахождение расстояния между двумя точками
-    distance = sqrt(pow((x_1 - x_2), 2) + pow((y_1 - y_2), 2) + pow((z_1 - z_2), 2));
-
-    return distance;
 }
 
 /***********************************************************************************
@@ -688,7 +345,7 @@ int main(void)
             Cursors();
             Draw_sphere(x_sphere, -y_sphere, radius_sphere);
             Show_plane();
-            Aircraft_turn(H);
+            Aircraft_traectory(H);
             bf_x = inter.x;
             bf_y = inter.y;
             bf_z = inter.z;
@@ -731,7 +388,7 @@ int main(void)
             //cout << "x_no = " << inter.x << endl;
             //cout << "y_no = " << inter.y << endl;
             //cout << "z_no = " << inter.z << endl;
-            Aircraft_turn(H);
+            //Aircraft_turn(H);
             glPopMatrix();
         }
         //

@@ -1,15 +1,6 @@
 // OpenGL_Test_rep.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 //
-
-#include "glew.h"
-#include "glfw3.h"
-#include <iostream>
-#include <windows.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <vector>
-
-// Подключение заголовочных файлов
+// Подключение заголовочного файла
 #include "Function_OpenGL.h"
 
 float x_inter, y_inter, z_inter;
@@ -109,64 +100,6 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 
 struct_inter Not_intersection(float pitch, float yaw, float H)
 {
-	/*
-	float t;
-
-	float x_1, y_1, z_1; // x = 0
-
-	float x_2, y_2, z_2; // y = 0
-
-	float x_3, y_3, z_3; // z = 0
-
-	float x_4, y_4, z_4; // x = 12
-
-	float x_5, y_5, z_5; // y = -12
-
-	float x_6, y_6, z_6; // z = 12
-	
-	// Если прямая пересекает плоскость с уравнением x = 6
-	t = 6 / m;
-
-	x_1 = m * t;
-	y_1 = -n * t;
-	z_1 = p * t + H;
-
-	// Если прямая пересекает плоскость с уравнением y = 6
-	t = 6 / n;
-
-	x_2 = m * t;
-	y_2 = -n * t;
-	z_2 = p * t + H;
-
-	// Если прямая пересекает плоскость с уравнением z = 0
-	t = -H / p;
-
-	x_3 = m * t;
-	y_3 = -n * t;
-	z_3 = p * t + H;
-
-	// Если прямая пересекает плоскость с уравнением x = 12
-	t = 12 / m;
-
-	x_4 = m * t;
-	y_4 = -n * t;
-	z_4 = p * t + H;
-
-	// Если прямая пересекает плоскость с уравнением y = 12
-	t = 12 / n;
-
-	x_5 = m * t;
-	y_5 = -n * t;
-	z_5 = p * t + H;
-
-	// Если прямая пересекает плоскость с уравнением z = 12
-	t = (12 - H) / p;
-
-	x_6 = m * t;
-	y_6 = -n * t;
-	z_6 = p * t + H;
-
-	*/
 
 	float a_x, a_y, a_z;
 
@@ -191,8 +124,6 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 	n_track = V * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
 	p_track = V * sin(pitch * M_PI / 180);
 
-	//cout << p_track << endl;
-
 	t_turn = (turn_x * m_track + turn_y * n_track + turn_z * p_track - p_track * H) / (pow(m_track,2) + pow(n_track, 2) + pow(p_track, 2));
 
 	x_1 = m_track * t_turn;
@@ -200,4 +131,36 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 	z_1 = p_track * t_turn + H;
 
 	return { x_1, y_1, z_1 };
+}
+
+/***********************************************************************************
+ * @brief Функция находит угол между двумя векторами
+ * @param x_1, y_1, z_1 - координаты первого вектора
+ * @param x_2, y_2, z_2 - координаты второго вектора
+ * @return Угол между двумя векторами в градусах
+***********************************************************************************/
+float Angle_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2)
+{
+	float cos_angle;
+
+	// Нахождение угла между двумя векторами
+	cos_angle = (x_1 * x_2 + y_1 * y_2 + z_1 * z_2) / ((sqrt(pow(x_1, 2) + pow(y_1, 2) + pow(z_1, 2))) * sqrt(pow(x_2, 2) + pow(y_2, 2) + pow(z_2, 2)));
+
+	return acos(cos_angle) * 180 / M_PI;
+}
+
+/***********************************************************************************
+ * @brief Функция находит расстояние между двумя точками
+ * @param x_1, y_1, z_1 - координаты первой точки
+ * @param x_2, y_2, z_2 - координаты второй точки
+ * @return Расстояние между двумя точками
+***********************************************************************************/
+float Disrance_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2)
+{
+	float distance;
+
+	// Нахождение расстояния между двумя точками
+	distance = sqrt(pow((x_1 - x_2), 2) + pow((y_1 - y_2), 2) + pow((z_1 - z_2), 2));
+
+	return distance;
 }
