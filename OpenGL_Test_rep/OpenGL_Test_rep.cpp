@@ -10,9 +10,9 @@
 #include "Camera_OpenGL.cpp"
 #include "Look_world_OpenGL.cpp"
 
+
 using namespace std;
 
-//
 
 // Раздел с описанием глобальных констант
 //
@@ -35,33 +35,6 @@ struct_turn turn;
 struct_contact contact;
 
 /***********************************************************************************
- * @brief Создание траектории полета ЛА
- * @return Ничего
-***********************************************************************************/
-void Aircraft_traectory(float H)
-{
-    // Настройка вершин
-    float vert_x[] = { 0,0,H, inter.x, inter.y, inter.z };
-
-    // Размер линии
-    glLineWidth(10);
-
-    // Метка, что будет использован массив вершин
-    glEnableClientState(GL_VERTEX_ARRAY);
-    // Сохранение данных из массива вершин
-    glVertexPointer(3, GL_FLOAT, 0, &vert_x);
-
-    // Сохранение текущей матрицы в стек
-    glPushMatrix();
-    // Установка цвета примитива
-    glColor3f(0, 0.8, 0);
-    // Создание примитива в виде линии
-    glDrawArrays(GL_LINE_STRIP, 0, 2);
-    // Возвращение матрицы из стека
-    glPopMatrix();
-}
-
-/***********************************************************************************
  * @brief Функция построения траектории виража ЛА
  * @param H Начальная высота ЛА
  * @param pitch Угол тангажа ЛА
@@ -81,12 +54,17 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     // Угол поворота точки на окружности
     float alfa;
 
+    // Коэффициент окружности для отрисовки
+    float circle_def = R_turn * 40;
+
     // Размер линии
     glLineWidth(10);
     // Метка, что будет использован массив вершин
     glEnableClientState(GL_VERTEX_ARRAY);
     // Сохранение данных из массива вершин
     glVertexPointer(3, GL_FLOAT, 0, &vert_1);
+
+    //glPrintl();
 
     // Сохранение текущей матрицы в стек
     glPushMatrix();
@@ -109,7 +87,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     glEnd();
 
     // Установка размера точки - точка пересечения сфер
-    glPointSize(20);
+    glPointSize(40);
     glBegin(GL_POINTS);
 
     // Установка цвета примитива
@@ -146,12 +124,12 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     glRotatef(-pitch - 10, 0.0f, 0.0f, 1.0f);
     //glRotatef(10, 0.0f, 0.0f, 1.0f);
 
-
     // Начало рисования окружности - траектории ухода ЛА
     glBegin(GL_LINE_STRIP);
+    glColor3f(0, 0.8, 0);
 
     // Цикл - нахождение точек окружности
-    for (int count_circle = 0; count_circle < 60; count_circle++)
+    for (int count_circle = 0; count_circle < int(circle_def); count_circle++)
     {
         if (count_circle > 19)
         {
@@ -174,7 +152,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     }
     glEnd();
     // Цикл - построение сфер на траектории
-    for (int count_sphere = 0; count_sphere < 60; count_sphere++)
+    for (int count_sphere = 0; count_sphere < int(circle_def); count_sphere++)
     {
         // Нахождение угла поворота точки
         alfa = -count_sphere / 50.0f * M_PI;
@@ -199,21 +177,21 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
 ***********************************************************************************/
 int main(void)
 {
-    float H;
-    float V;
-    float pitch;
-    float yaw;
-    float x_sphere;
-    float y_sphere;
-    float radius_sphere;
-    bool flag_cross;
+    float H; // Начальная высота ЛА
+    float V; // Скорость ЛА
+    float pitch; // Угол тангажа ЛА
+    float yaw; // Угол рысканья ЛА
+    float x_sphere; // Координата x полусферы
+    float y_sphere; // Координата y полусферы
+    float radius_sphere; // Радиус полусферы
+    bool flag_cross; // Метка пересечения траектории ЛА и полусферы
 
-    float R_turn;
-    float n_y;
+    float R_turn; // Значение радиуса виража
+    float n_y; // Значение продольной перегрузки
 
-    float bf_x, bf_y, bf_z;
+    float bf_x, bf_y, bf_z; // Буферные переменные
 
-    float cos_roll;
+    float cos_roll; // Значение 
 
     float coefficient_scale_big = 1000;
     float coefficient_scale_small = 100;
@@ -245,24 +223,11 @@ int main(void)
 
     glFrustum(-1, 1, -1, 1, 2,80);
 
-    /****************************************************************
-    // Математические расчеты пересечения заданной траектории и сферы
-    // **************************************************************
-    H = 3;
-    V = 2;
-    pitch = -45;
-    yaw = 45;
-    x_sphere = 2;
-    y_sphere = 2;
-    radius_sphere = 2;
-    //**************************************************************
-    *///************************************************************
-
     ///****************************************************************
     // Математические расчеты пересечения заданной траектории и сферы
     // **************************************************************
-    H = 3000;
-    V = 200;
+    H = 5000;
+    V = 500;
     pitch = -45;
     yaw = 30;
     x_sphere = 2000;
@@ -272,13 +237,11 @@ int main(void)
     //*///************************************************************
 
     //
-    H = 3000 / coefficient_scale_big;
-    V = 200 / coefficient_scale_small;
-    pitch = -45;
-    yaw = 30;
-    x_sphere = 2000 / coefficient_scale_big;
-    y_sphere = 2000 / coefficient_scale_big;
-    radius_sphere = 200 / coefficient_scale_small;
+    H = H / coefficient_scale_big;
+    V = V / coefficient_scale_small;
+    x_sphere = x_sphere / coefficient_scale_big;
+    y_sphere = y_sphere / coefficient_scale_big;
+    radius_sphere = radius_sphere / coefficient_scale_small;
     //
 
     inter = Intersection_sphere(H, V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
@@ -290,42 +253,35 @@ int main(void)
 
     //********************************************************************************
 
-    /*
-    //cos_roll = pow(cos(yaw * M_PI / 180), 2) - pow(cos(pitch * M_PI / 180), 2);
-    //cout << cos_roll << "cos" << endl;
-
-    //cos_roll = 1 - cos_roll;
-    //cout << cos_roll << "cos" << endl;
-    //cos_roll = sqrt(cos_roll);
     
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // cos = 0
+    //cos_roll = sqrt(1 - pow(cos(yaw * M_PI / 180), 2) - pow(cos(pitch * M_PI / 180), 2));
 
-    //cout << cos_roll << "cos" << endl;
+    cos_roll = sqrt(1 - pow(cos(yaw * M_PI / 180), 2));
+
+    cout << cos_roll << "cos" << endl;
 
     if ((cos_roll == 1) || (cos_roll == 0) || (cos_roll == -1))
     {
-        R_turn = 2;
+        R_turn = 0;
+        cout << "ВИРАЖ НЕВОЗМОЖЕН!!! НЕДОПУСТИМЫЙ УГОЛ КРЕНА!!!" << endl;
     }
     else
     {
         n_y = 1 / cos_roll;
         R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
     }
-    */
-
-    n_y = 1.5;
 
     R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
 
-    //R_turn = 2;
+    //R_turn = 5;
 
-    cout << R_turn << "R_VIRAZHE" << endl;
-
+    cout << R_turn << " = R_VIRAZHE" << endl;
 
     angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, inter.x, inter.y, 0);
 
-    cout << angle_radius << "angle_VIRAZHE" << endl;
+    cout << angle_radius << " = angle_VIRAZHE" << endl;
+
+    float f;
 
     //********************************************************************************
 
@@ -336,16 +292,24 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //cout << flag_cross << endl;
+
         
-        if (inter.flag_inter == true)
+        if ((inter.flag_inter == true) && (R_turn != 0))
         {
+            // Сохранение матрицы вида в стек
             glPushMatrix();
-            Move_camera();
+            // Функция управления камерой
+            Move_camera(); 
+            // Отрисовка осей
             Axe();
+            // Отрисовка направляющих стрелок на осях
             Cursors();
+            // Рисование полусферы
             Draw_sphere(x_sphere, -y_sphere, radius_sphere);
+            // Отрисовка плоскости
             Show_plane();
-            Aircraft_traectory(H);
+            // Отображение траектории ЛА
+            Aircraft_traectory(H, inter.x, inter.y, inter.z);
             bf_x = inter.x;
             bf_y = inter.y;
             bf_z = inter.z;
@@ -353,12 +317,6 @@ int main(void)
             turn.x = inter.x;
             turn.y = inter.y;
             turn.z = inter.z;
-            inter.x = bf_x;
-            inter.y = bf_y;
-            inter.z = bf_z;
-            bf_x = inter.x;
-            bf_y = inter.y;
-            bf_z = inter.z;
             inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * M_PI / 180), V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
             contact.x = inter.x;
             contact.y = inter.y;
@@ -372,33 +330,30 @@ int main(void)
         }
         else
         {
+            // Сохранение матрицы вида в стек
             glPushMatrix();
+            // Функция управления камерой
             Move_camera();
+            // Отрисовка осей
             Axe();
+            // Отрисовка направляющих стрелок на осях
             Cursors();
+            // Рисование полусферы
             Draw_sphere(x_sphere, -y_sphere, radius_sphere);
+            // Отрисовка плоскости
             Show_plane();
-            //inter = Not_intersection(pitch, yaw, H);
-            bf_x = H * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
-            bf_y = -H * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
-            bf_z = H + H * sin(pitch * M_PI / 180);
-            inter.x = bf_x;
-            inter.y = bf_y;
-            inter.z = bf_z;
-            //cout << "x_no = " << inter.x << endl;
-            //cout << "y_no = " << inter.y << endl;
-            //cout << "z_no = " << inter.z << endl;
-            //Aircraft_turn(H);
+            // Нахождение координат конечной точки движения ЛА
+            inter = Not_intersection(pitch, yaw, H, V);
+            // Построение траектории ЛА
+            Aircraft_traectory(H, inter.x, inter.y, inter.z);
+            // Возвращение матрицы из стека
             glPopMatrix();
         }
-        //
-        //
 
-        //
         // Смена буфера
         glfwSwapBuffers(window);
 
-        // 
+        // Отключение событий
         glfwPollEvents();
     }
 

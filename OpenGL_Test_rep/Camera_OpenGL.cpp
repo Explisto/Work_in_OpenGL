@@ -2,8 +2,8 @@
 #include "Function_OpenGL.h"
 
 typedef struct struct_position_camera {
-    float x = 5;
-    float y = -5;
+    float x = 8;
+    float y = -8;
     float z = -10;
 };
 
@@ -13,13 +13,16 @@ float theta = 0.0f;
 float turn_x = 0;
 float turn_z = 0;
 
+/*
 /***********************************************************************************
  * @brief Функция движения камеры по сцене
  * @return Ничего
 ***********************************************************************************/
 void Move_camera()
 {
+
     glRotatef(-45, 1, 0, 0);
+    glRotatef(-45, 0, 0, 1);
 
     if (GetKeyState(VK_UP) < 0)
     {
@@ -44,8 +47,16 @@ void Move_camera()
 
     float speed_z = 0;
 
-    if (GetKeyState('W') < 0) speed = 0.01f;
-    if (GetKeyState('S') < 0) speed = -0.01f;
+    if (GetKeyState('W') < 0)
+    {
+        speed = 0.01f;
+    }
+
+    if (GetKeyState('S') < 0)
+    {
+        speed = -0.01f;
+    }
+
     if (GetKeyState('A') < 0)
     {
         speed = -0.01f;
@@ -56,19 +67,21 @@ void Move_camera()
         speed = -0.01f;
         angle -= M_PI * 0.5f;
     }
+    /*
     if (GetKeyState('Q') < 0)
     {
-        pos.z += speed_z;
+        speed = -0.01f;
     }
     if (GetKeyState('E') < 0)
     {
-        pos.z -= speed_z;
+        speed = -0.01f;
     }
+    */
     if (speed != 0)
     {
         pos.x += sin(angle) * speed;
         pos.y += cos(angle) * speed;
-        //pos.z += speed_z;
+        //pos.z += cos(angle) * speed;
     }
 
     glTranslatef(-pos.x, -pos.y, pos.z);

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <windows.h>
 #include <gl/gl.h>
+#include <glut.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -26,7 +27,7 @@ void Show_plane();
 
 void Axe();
 
-void Aircraft_traectory(float H);
+void Aircraft_traectory(float H, float x_end, float y_end, float z_end);
 
 void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn);
 
@@ -34,7 +35,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn);
 
 struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float x_sp, float z_sp, float R_sp);
 
-struct_inter Not_intersection(float pitch, float yaw, float H);
+struct_inter Not_intersection(float pitch, float yaw, float H, float V);
 
 //
 

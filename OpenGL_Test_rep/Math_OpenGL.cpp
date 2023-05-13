@@ -43,7 +43,8 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 	C = pow(x_sp, 2) + pow(y_sp, 2) + pow(H, 2) - pow(R_sp, 2);
 
 	D = pow(B, 2) - 4 * A * C;
-	//cout << D << endl;
+
+	//cout << "Discriminant = " <<D << endl;
 	
 	if (D < 0)
 	{
@@ -98,16 +99,24 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 	}
 }
 
-struct_inter Not_intersection(float pitch, float yaw, float H)
+struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 {
 
 	float a_x, a_y, a_z;
 
-	float vector_long = H;
+	//cout << "V = " << V << endl;
+
+	float vector_long = V / 20 * 100;
 
 	a_x = vector_long * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
 	a_y = -vector_long * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
+	a_z = H + vector_long * sin(pitch * M_PI / 180);
+
+	/*
+	a_x = vector_long * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
+	a_y = -vector_long * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
 	a_z = vector_long * cos(pitch * M_PI / 180);
+	*/
 
 	return { a_x, a_y, a_z, false };
 }
@@ -124,7 +133,7 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 	n_track = V * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
 	p_track = V * sin(pitch * M_PI / 180);
 
-	t_turn = (turn_x * m_track + turn_y * n_track + turn_z * p_track - p_track * H) / (pow(m_track,2) + pow(n_track, 2) + pow(p_track, 2));
+	t_turn = -(turn_x * m_track + turn_y * n_track + turn_z * p_track - p_track * H) / (pow(m_track,2) + pow(n_track, 2) + pow(p_track, 2));
 
 	x_1 = m_track * t_turn;
 	y_1 = -n_track * t_turn;
@@ -157,10 +166,16 @@ float Angle_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, f
 ***********************************************************************************/
 float Disrance_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2)
 {
-	float distance;
+	float distance = 0;
 
 	// Ќахождение рассто€ни€ между двум€ точками
-	distance = sqrt(pow((x_1 - x_2), 2) + pow((y_1 - y_2), 2) + pow((z_1 - z_2), 2));
+	while (distance < 15)
+	{
+		distance = sqrt(pow((x_1 - x_2), 2) + pow((y_1 - y_2), 2) + pow((z_1 - z_2), 2));
+		x_2 += 0.5;
+		y_2 += 0.5;
+		z_2 += 0.5;
+	}
 
 	return distance;
 }
