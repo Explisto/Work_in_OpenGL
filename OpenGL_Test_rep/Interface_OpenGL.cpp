@@ -25,7 +25,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdsho
 	return 0;
 }
 
-WNDCLASS NewWindowClass(HBRUSH BGColor, HCURSOR Cursor, HINSTANCE hInst, HICON Icon, LPCWSTR Name, WNDPROC Procedure)
+WNDCLASS NewWindowClass(HBRUSH BGColor, HCURSOR Cursor, HINSTANCE hInst, HICON Icon, LPCWSTR Name, WNDPROC Procedure) 
 {
 	WNDCLASS NWC = { 0 };
 
@@ -39,13 +39,13 @@ WNDCLASS NewWindowClass(HBRUSH BGColor, HCURSOR Cursor, HINSTANCE hInst, HICON I
 	return NWC;
 }
 
-LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp) 
 
 {
 	switch (msg) {
 	case WM_COMMAND:
 
-		switch (wp)
+		switch (wp) 
 		{
 
 		}
@@ -60,7 +60,7 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
 	}
 }
 
-void MainWndAddMenus(HWND hWnd)
+void MainWndAddMenus(HWND hWnd) 
 {
 	HMENU RootMenu = CreateMenu();
 	HMENU SubMenu = CreateMenu();
