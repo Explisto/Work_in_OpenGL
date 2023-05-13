@@ -177,6 +177,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
 ***********************************************************************************/
 int main(void)
 {
+    setlocale(LC_ALL, "Russian");
     float H; // Начальная высота ЛА
     float V; // Скорость ЛА
     float pitch; // Угол тангажа ЛА
@@ -223,10 +224,14 @@ int main(void)
 
     glFrustum(-1, 1, -1, 1, 2,80);
 
+    cout << "===================================================" << endl;
+    cout << "!Уход ЛА по круговой траектории!" << endl;
+    cout << "===================================================" << endl;
+
     ///****************************************************************
     // Математические расчеты пересечения заданной траектории и сферы
     // **************************************************************
-    H = 5000;
+    H = 3000;
     V = 500;
     pitch = -45;
     yaw = 30;
@@ -235,7 +240,15 @@ int main(void)
     radius_sphere = 200;
     //**************************************************************
     //*///************************************************************
-
+    cout << "Входные данные для работы программы:" << endl;
+    cout << "Начальная высота ЛА:" << H << " метров;" <<endl;
+    cout << "Скорость ЛА: " << V << " км/ч;" << endl;
+    cout << "Угол тангажа ЛА: " << pitch << " градусов;" << endl;
+    cout << "Угол рысканья ЛА: " << yaw << " градусов;" << endl;
+    cout << "Координаты центра полусферы по оси oX: " << x_sphere << " метров;" << endl;
+    cout << "Координаты центра полусферы по оси oY: " << y_sphere << " метров;" << endl;
+    cout << "Радиус полусферы: " << radius_sphere << " метров;" << endl;
+    cout << "===================================================" << endl;
     //
     H = H / coefficient_scale_big;
     V = V / coefficient_scale_small;
@@ -245,20 +258,30 @@ int main(void)
     //
 
     inter = Intersection_sphere(H, V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
-
-    cout << "x = " << inter.x << endl;
-    cout << "y = " << inter.y << endl;
-    cout << "z = " << inter.z << endl;
-    cout << "flag = " << inter.flag_inter << endl;
+    cout << "===================================================" << endl;
+    cout << "Точка пересечения траектории ЛА и сферы:" << endl;
+    cout << "Произошло ли пересечение со сферой? - ";
+    if (inter.flag_inter == true)
+    {
+        cout << "Да;" << endl;
+    }
+    else
+    {
+        cout << "Нет;" << endl;
+    }
+    cout << "x_inter = " << inter.x << ";" << endl;
+    cout << "y_inter = " << inter.y << ";" << endl;
+    cout << "z_inter= " << inter.z << ";" << endl;
+    cout << "===================================================" << endl;
 
     //********************************************************************************
 
     
     //cos_roll = sqrt(1 - pow(cos(yaw * M_PI / 180), 2) - pow(cos(pitch * M_PI / 180), 2));
 
-    cos_roll = sqrt(1 - pow(cos(yaw * M_PI / 180), 2));
+    cos_roll = 0.5;
 
-    cout << cos_roll << "cos" << endl;
+    cout << "Косинус угла крена = " << cos_roll << ";" <<endl;
 
     if ((cos_roll == 1) || (cos_roll == 0) || (cos_roll == -1))
     {
@@ -273,15 +296,9 @@ int main(void)
 
     R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
 
-    //R_turn = 5;
-
-    cout << R_turn << " = R_VIRAZHE" << endl;
+    cout << "Радиус виража = "<< R_turn << " метров;" <<endl;
 
     angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, inter.x, inter.y, 0);
-
-    cout << angle_radius << " = angle_VIRAZHE" << endl;
-
-    float f;
 
     //********************************************************************************
 
