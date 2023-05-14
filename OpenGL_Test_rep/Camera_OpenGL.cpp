@@ -2,8 +2,8 @@
 #include "Function_OpenGL.h"
 
 typedef struct struct_position_camera {
-    float x = 8;
-    float y = -8;
+    float x = 12;
+    float y = -12;
     float z = -10;
 };
 
@@ -11,6 +11,7 @@ struct_position_camera pos;
 // Параметры для работы с камерой
 float theta = 0.0f;
 float turn_x = 0;
+float turn_y = 0;
 float turn_z = 0;
 
 /*
@@ -32,6 +33,14 @@ void Move_camera()
     {
         turn_x -= 0.1f;
     }
+    if (GetKeyState('Q') < 0)
+    {
+        turn_y += 0.1f;
+    }
+    if (GetKeyState('E') < 0)
+    {
+        turn_y -= 0.1f;
+    }
     if (GetKeyState(VK_LEFT) < 0)
     {
         turn_z += 0.1f;
@@ -41,50 +50,51 @@ void Move_camera()
         turn_z -= 0.1f;
     }
 
-    float angle = -turn_x / 180 * M_PI;
+    float angle_x = -turn_x / 180 * M_PI;
+    float angle_y = -turn_x / 180 * M_PI;
 
-    float speed = 0;
-
+    float speed_x = 0;
+    float speed_y = 0;
     float speed_z = 0;
 
     if (GetKeyState('W') < 0)
     {
-        speed = 0.01f;
+        speed_y = 0.01f;
     }
 
     if (GetKeyState('S') < 0)
     {
-        speed = -0.01f;
+        speed_y = -0.01f;
     }
 
     if (GetKeyState('A') < 0)
     {
-        speed = -0.01f;
-        angle += M_PI * 0.5f;
+        speed_x = -0.01f;
     }
     if (GetKeyState('D') < 0)
     {
-        speed = -0.01f;
-        angle -= M_PI * 0.5f;
+        speed_x = 0.01f;
     }
-    /*
-    if (GetKeyState('Q') < 0)
+
+    if (GetKeyState('Z') < 0)
     {
-        speed = -0.01f;
+        speed_z = 0.01f;
     }
-    if (GetKeyState('E') < 0)
+
+    if (GetKeyState('C') < 0)
     {
-        speed = -0.01f;
+        speed_z = -0.01f;
     }
-    */
-    if (speed != 0)
+
+    if ((speed_x != 0) || (speed_y != 0) || (speed_z != 0))
     {
-        pos.x += sin(angle) * speed;
-        pos.y += cos(angle) * speed;
-        //pos.z += cos(angle) * speed;
+        pos.x += speed_x;
+        pos.y += speed_y;
+        pos.z += speed_z;
     }
 
     glTranslatef(-pos.x, -pos.y, pos.z);
     glRotatef(-turn_x, 1, 0, 0);
+    glRotatef(-turn_y, 0, 1, 0);
     glRotatef(-turn_z, 0, 0, 1);
 }

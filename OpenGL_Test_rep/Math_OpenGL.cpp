@@ -91,10 +91,6 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 			}
 		}
 
-		//x_inter = x_t;
-		//y_inter = -y_t;
-		//z_inter = z_t;
-
 		return { x_t, -y_t, z_t, true };
 	}
 }
@@ -103,22 +99,41 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 {
 
 	float a_x, a_y, a_z;
-
-	//cout << "V = " << V << endl;
-
+	float x_t, y_t, z_t;
+	float t, m, n, p;
+	float distance_1, distance_2;
 	float vector_long = V / 20 * 100;
 
 	a_x = vector_long * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
 	a_y = -vector_long * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
 	a_z = H + vector_long * sin(pitch * M_PI / 180);
 
-	/*
-	a_x = vector_long * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
-	a_y = -vector_long * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
-	a_z = vector_long * cos(pitch * M_PI / 180);
-	*/
+	m = V * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
+	n = V * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
+	p = V * sin(pitch * M_PI / 180);
 
-	return { a_x, a_y, a_z, false };
+	if (p == 0)
+	{
+		return { a_x, a_y, a_z, false };
+	}
+
+	t = -H / p;
+
+	x_t = m * t;
+	y_t = - n * t;
+	z_t = p * t + H;
+
+	distance_1 = Disrance_two_vectors(0, 0, H, a_x, a_y, a_z);
+	distance_2 = Disrance_two_vectors(0, 0, H, x_t, y_t, z_t);
+
+	if (distance_1 < distance_2)
+	{
+		return { a_x, a_y, a_z, false };
+	}
+	else
+	{
+		return { x_t, y_t, z_t, false };
+	}
 }
 
 struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw)
@@ -169,13 +184,7 @@ float Disrance_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2
 	float distance = 0;
 
 	// Ќахождение рассто€ни€ между двум€ точками
-	while (distance < 15)
-	{
-		distance = sqrt(pow((x_1 - x_2), 2) + pow((y_1 - y_2), 2) + pow((z_1 - z_2), 2));
-		x_2 += 0.5;
-		y_2 += 0.5;
-		z_2 += 0.5;
-	}
+	distance = sqrt(pow((x_1 - x_2), 2) + pow((y_1 - y_2), 2) + pow((z_1 - z_2), 2));
 
 	return distance;
 }

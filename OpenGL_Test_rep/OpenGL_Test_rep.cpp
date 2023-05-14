@@ -55,7 +55,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     float alfa;
 
     // Коэффициент окружности для отрисовки
-    float circle_def = R_turn * 40;
+    float circle_def = 100;
 
     // Размер линии
     glLineWidth(10);
@@ -81,17 +81,18 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
 
     // Установка цвета примитива
     glColor3d(0, 1, 0);
+
     // Координаты точки начала ухода ЛА
     glVertex3d(track.x, track.y, track.z);
 
     glEnd();
 
     // Установка размера точки - точка пересечения сфер
-    glPointSize(40);
+    glPointSize(20);
     glBegin(GL_POINTS);
 
     // Установка цвета примитива
-    glColor3d(0.8, 1, 0.5);
+    glColor3d(0.8, 0.2, 0.5);
     // Координаты точки контакта сфер
     glVertex3d(contact.x, contact.y, contact.z);
 
@@ -121,7 +122,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
     // Поворот окружности на угол рысканья
     glRotatef(-(90 - yaw), 0.0f, 1.0f, 0.0f);
     // Поворот окружности на угол танагажа
-    glRotatef(-pitch - 10, 0.0f, 0.0f, 1.0f);
+    glRotatef(-pitch, 0.0f, 0.0f, 1.0f);
     //glRotatef(10, 0.0f, 0.0f, 1.0f);
 
     // Начало рисования окружности - траектории ухода ЛА
@@ -151,6 +152,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
         }
     }
     glEnd();
+
     // Цикл - построение сфер на траектории
     for (int count_sphere = 0; count_sphere < int(circle_def); count_sphere++)
     {
@@ -160,9 +162,9 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
         x_rotate = cos(alfa) * R_turn;
         y_rotate = sin(alfa) * R_turn;
         // Построение сфер на траектории ЛА
-        if (((count_sphere % 10 == 0) || (count_sphere == 49)) && (count_sphere > 19))
+        if (((count_sphere == 1) || (count_sphere == 49)) && (count_sphere > 19))
         {
-            Draw_sphere_traectory(x_rotate, y_rotate, 0.05); // Вызов функции построения сферы
+            Draw_sphere_traectory(x_rotate, y_rotate, 0.2); // Вызов функции построения сферы
         }
     }
     // Возвращение матрицы из стека
@@ -170,6 +172,7 @@ void Aircraft_turn(float H, float pitch, float yaw, float radius, float R_turn)
 
 
 }
+
 
 /***********************************************************************************
  * @brief Основное тело программы
@@ -192,29 +195,36 @@ int main(void)
 
     float bf_x, bf_y, bf_z; // Буферные переменные
 
-    float cos_roll; // Значение 
+    float cos_roll; // Значение косинуса угла крена
 
     float coefficient_scale_big = 1000;
     float coefficient_scale_small = 100;
 
     float angle_radius;
+
     GLFWwindow* window;
 
+    int WIDTH = 1000;
+    int HEIGHT = 1000;
+
     
-    /* Initialize the library */
+    // Проверка инициализации библиотеки GLFW
     if (!glfwInit())
         return -1;
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(1200, 1200, "Aircraft", NULL, NULL);
+    // Создание сового окна с заданными размерами
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Aircraft", NULL, NULL);
+    // Если окно не создано
     if (!window)
     {
-        glfwTerminate();
+        glfwTerminate(); // Уничтожение окна
         return -1;
     }
 
-    /* Make the window's context current */
+    // Создание контекста окна
+
     glfwMakeContextCurrent(window);
+    //glfwMaximizeWindow(window);
 
     if (glewInit() != GLEW_OK)
     {
@@ -222,7 +232,7 @@ int main(void)
         return -1;
     }
 
-    glFrustum(-1, 1, -1, 1, 2,80);
+    glFrustum(-1, 1, -1, 1, 1,80);
 
     cout << "===================================================" << endl;
     cout << "!Уход ЛА по круговой траектории!" << endl;
@@ -231,13 +241,13 @@ int main(void)
     ///****************************************************************
     // Математические расчеты пересечения заданной траектории и сферы
     // **************************************************************
-    H = 3000;
+    H = 10000;
     V = 500;
-    pitch = -45;
-    yaw = 30;
+    pitch = -56;
+    yaw = 20;
     x_sphere = 2000;
-    y_sphere = 2000;
-    radius_sphere = 200;
+    y_sphere = 7000;
+    radius_sphere = 2000;
     //**************************************************************
     //*///************************************************************
     cout << "Входные данные для работы программы:" << endl;
@@ -254,34 +264,14 @@ int main(void)
     V = V / coefficient_scale_small;
     x_sphere = x_sphere / coefficient_scale_big;
     y_sphere = y_sphere / coefficient_scale_big;
-    radius_sphere = radius_sphere / coefficient_scale_small;
+    radius_sphere = radius_sphere / coefficient_scale_big;
     //
 
     inter = Intersection_sphere(H, V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
-    cout << "===================================================" << endl;
-    cout << "Точка пересечения траектории ЛА и сферы:" << endl;
-    cout << "Произошло ли пересечение со сферой? - ";
-    if (inter.flag_inter == true)
-    {
-        cout << "Да;" << endl;
-    }
-    else
-    {
-        cout << "Нет;" << endl;
-    }
-    cout << "x_inter = " << inter.x << ";" << endl;
-    cout << "y_inter = " << inter.y << ";" << endl;
-    cout << "z_inter= " << inter.z << ";" << endl;
-    cout << "===================================================" << endl;
-
-    //********************************************************************************
-
-    
-    //cos_roll = sqrt(1 - pow(cos(yaw * M_PI / 180), 2) - pow(cos(pitch * M_PI / 180), 2));
 
     cos_roll = 0.5;
 
-    cout << "Косинус угла крена = " << cos_roll << ";" <<endl;
+    cout << "Косинус угла крена = " << cos_roll << ";" << endl;
 
     if ((cos_roll == 1) || (cos_roll == 0) || (cos_roll == -1))
     {
@@ -296,21 +286,77 @@ int main(void)
 
     R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
 
-    cout << "Радиус виража = "<< R_turn << " метров;" <<endl;
+    cout << "Радиус виража = " << R_turn << " метров;" << endl;
 
     angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, inter.x, inter.y, 0);
 
     //********************************************************************************
 
-    /* Loop until the user closes the window */
+    if (inter.flag_inter == true)
+    {
+        bf_x = inter.x;
+        bf_y = inter.y;
+        bf_z = inter.z;
+        inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * M_PI / 180), V, pitch, yaw, x_sphere, y_sphere, cos(angle_radius * M_PI / 180) * (radius_sphere + R_turn));
+        turn.x = inter.x;
+        turn.y = inter.y;
+        turn.z = inter.z;
+        inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * M_PI / 180), V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
+        contact.x = inter.x;
+        contact.y = inter.y;
+        contact.z = inter.z;
+        inter.x = bf_x;
+        inter.y = bf_y;
+        inter.z = bf_z;
+        track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
+        Draw_sphere(track.x, track.y, 2);
+    }
+
+    cout << "Пересечение со сферой - ";
+    if (inter.flag_inter == true)
+    {
+        cout << "Да;" << endl;
+        cout << "===================================================" << endl;
+        cout << "Координаты точки пересечения траектории ЛА и сферы:" << endl;
+        cout << "x_inter = " << inter.x << ";" << endl;
+        cout << "y_inter = " << inter.y << ";" << endl;
+        cout << "z_inter = " << inter.z << ";" << endl;
+        cout << "===================================================" << endl;
+        cout << "Координаты центра окружности ухода ЛА:" << endl;
+        cout << "x_turn = " << turn.x << ";" << endl;
+        cout << "y_turn = " << turn.y << ";" << endl;
+        cout << "z_turn = " << turn.z << ";" << endl;
+        cout << "===================================================" << endl;
+        cout << "Координаты точки пересечения траектории ЛА и полусферы:" << endl;
+        cout << "x_contact = " << contact.x << ";" << endl;
+        cout << "y_contact = " << contact.y << ";" << endl;
+        cout << "z_contact = " << contact.z << ";" << endl;
+        cout << "===================================================" << endl;
+        cout << "Координаты точки начала ухода ЛА по круговой траектории:" << endl;
+        cout << "x_track = " << track.x << ";" << endl;
+        cout << "y_track = " << track.y << ";" << endl;
+        cout << "z_track = " << track.z << ";" << endl;
+        cout << "===================================================" << endl;
+    }
+    else
+    {
+        cout << "Нет;" << endl;
+    }
+    cout << "===================================================" << endl;
+
+    //********************************************************************************
+
+    
+    //cos_roll = sqrt(1 - pow(cos(yaw * M_PI / 180), 2) - pow(cos(pitch * M_PI / 180), 2));
+
+    // Основной цикл программы, пока не закрыто окно glfw
     while (!glfwWindowShouldClose(window))
     {
-        // Очистка буфера цвета и глубины
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //cout << flag_cross << endl;
 
-        
+        // Очистка буфера цвета и глубин
+        //glClearColor(1,1,0,0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         if ((inter.flag_inter == true) && (R_turn != 0))
         {
             // Сохранение матрицы вида в стек
@@ -327,21 +373,7 @@ int main(void)
             Show_plane();
             // Отображение траектории ЛА
             Aircraft_traectory(H, inter.x, inter.y, inter.z);
-            bf_x = inter.x;
-            bf_y = inter.y;
-            bf_z = inter.z;
-            inter = Intersection_sphere(H + R_turn / sin((90-pitch) * M_PI / 180), V, pitch, yaw, x_sphere, y_sphere, cos(angle_radius * M_PI / 180) * (radius_sphere + R_turn));
-            turn.x = inter.x;
-            turn.y = inter.y;
-            turn.z = inter.z;
-            inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * M_PI / 180), V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
-            contact.x = inter.x;
-            contact.y = inter.y;
-            contact.z = inter.z;
-            inter.x = bf_x;
-            inter.y = bf_y;
-            inter.z = bf_z;
-            track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
+            // Отрисовка полуокружности ухода ЛА
             Aircraft_turn(H, pitch, yaw, radius_sphere, R_turn);
             glPopMatrix();
         }
@@ -370,11 +402,11 @@ int main(void)
         // Смена буфера
         glfwSwapBuffers(window);
 
-        // Отключение событий
+        // Отслеживание событий внутри окна
         glfwPollEvents();
     }
 
-    // Очистка буфера
+    // Уничтожение окна
     glfwTerminate();
     return 0;
 }
