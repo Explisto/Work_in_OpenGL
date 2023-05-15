@@ -145,7 +145,14 @@ void Draw_sphere_traectory(float x_sp, float y_sp, float r)
     float db = di * 2 * M_PI;
     float da = dj * M_PI;
     float p_1, p_2, p_3, p_4;
-
+    if ((r > 0.09) && (r < 0.11))
+    {
+        glColor3f(1.0f, 0.0f, 0.0f);
+    }
+    else
+    {
+        glColor3f(0.4f, 0.1f, 0.8f);
+    }
     // Горизонтальная плоскость
     for (float i = 0.0; i < 1.0; i += di)
     {
@@ -155,7 +162,6 @@ void Draw_sphere_traectory(float x_sp, float y_sp, float r)
             float b = i * 2 * M_PI;
             float a = (j - 0.5) * M_PI;
 
-            glColor3f(1.0f, 0.0f, 0.0f);
             // Нормализация координат вектора
             glNormal3f(
                 x_sp + cos(a + da / 2) * cos(b + db / 2),

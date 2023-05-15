@@ -13,15 +13,30 @@ float theta = 0.0f;
 float turn_x = 0;
 float turn_y = 0;
 float turn_z = 0;
-
+GLfloat mat[16];
+bool flag = true;
 /*
 /***********************************************************************************
  * @brief Функция движения камеры по сцене
  * @return Ничего
 ***********************************************************************************/
-void Move_camera()
+void Move_camera(bool flag_console)
 {
+    /*
+    if (flag == true)
+    {
+        glGetFloatv(GL_MODELVIEW_MATRIX, mat);
+        flag = false;
+        cout << "СОХРАНЕНИЕ" << endl;
+    }
 
+    if (flag_console == true)
+    {
+        glMatrixMode(GL_MODELVIEW); // make sure we restore to MODELVIEW
+        glLoadMatrixf(mat); // restore it
+        cout << "ДАЮ ЖАРУ" << endl;
+    }
+    */
     glRotatef(-45, 1, 0, 0);
     glRotatef(-45, 0, 0, 1);
 

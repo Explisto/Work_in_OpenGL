@@ -3,10 +3,12 @@
 // Подключение заголовочного файла
 #include "Function_OpenGL.h"
 
+// Переменные для хранения координат опорных точек
 float x_inter, y_inter, z_inter;
 float x_track, y_track, z_track;
 float x_turn, y_turn, z_turn;
 
+// Подключение пространства имен
 using namespace std;
 
 /***********************************************************************************
@@ -21,57 +23,63 @@ using namespace std;
 ***********************************************************************************/
 struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float x_sp, float y_sp, float R_sp)
 {
+	// Переменные для хранения значений параметров прямой
 	float V_x, V_y, V_z;
 	float m, n, p;
 	float A, B, C, D;
-
 	bool flag_loot;
 	float t_1, t_2;
 	float x_t, y_t, z_t;
 	float y_1, y_2;
 
+	// Определение проекций вектора скорости на оси координат
 	V_x = V * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
 	V_y = V * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
 	V_z = V * sin(pitch * M_PI / 180);
 
+	// Присвоение значений компонентам направляющего вектора прямой
 	m = V_x;
 	n = V_y;
 	p = V_z;
 
+	// Решение квадратного уравнения
 	A = pow(m, 2) + pow(n, 2) + pow(p, 2);
 	B = -2 * m * x_sp - 2 * n * y_sp + 2 * p * H;
 	C = pow(x_sp, 2) + pow(y_sp, 2) + pow(H, 2) - pow(R_sp, 2);
-
+	// Вычисление дискриминанта
 	D = pow(B, 2) - 4 * A * C;
 
-	//cout << "Discriminant = " <<D << endl;
+	cout << D << " = Discr" << endl;
 	
+	// Если дискриминант меньше нуля - нет пересечения прямой и сферы
 	if (D < 0)
 	{
 		return { 0, 0, 0, false };
 	}
+	// Если есть пересечение прямой и сферы
 	else
 	{
-
+		// Одна точка пересечения
 		if (D == 0)
 		{
 			t_1 = (-B) / (2 * A);
 			flag_loot = true;
 		}
+		// Две точки пересечения
 		else
 		{
 			t_1 = (-B + sqrt(D)) / (2 * A);
 			t_2 = (-B - sqrt(D)) / (2 * A);
 			flag_loot = false;
 		}
-
+		// Присваение одной точки
 		if (flag_loot == true)
 		{
 			x_t = m * t_1;
 			y_t = n * t_1;
 			z_t = p * t_1 + H;
 		}
-
+		// Если две точки, то выбираем наиболее ближнюю к началу системы координат
 		else
 		{
 			y_1 = n * t_1;
@@ -90,7 +98,7 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 				z_t = p * t_2 + H;
 			}
 		}
-
+		// Возвращаем точку пересечения прямой и сферы
 		return { x_t, -y_t, z_t, true };
 	}
 }
