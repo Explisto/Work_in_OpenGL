@@ -27,6 +27,7 @@ float GLOBAL_EARTH_ACSELERATION = 9.8f;
 float GLOBAL_PI = 3.1415926535f;
 
 // Объявление функций
+
 void Cursors();
 
 void Draw_sphere(float x_sp, float y_sp, float r);

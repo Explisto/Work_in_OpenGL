@@ -1,27 +1,28 @@
 // Файл с структурами
 
+// Структура с координатами точки пересечения траектории ЛА и сферы
 struct struct_inter {
-	float x = 0.0;
-	float y = 0.0;
-	float z = 0.0;
-	bool flag_inter = false;
+	float x = 0.0; // Координата x
+	float y = 0.0; // Координата y
+	float z = 0.0; // Координата z
+	bool flag_inter = false; // Метка пересечения траектории и сферы
 };
-
+// Структура с координатами точки начала ухода ЛА
 struct struct_track {
-	float x = 0.0;
-	float y = 0.0;
-	float z = 0.0;
+	float x = 0.0; // Координата x
+	float y = 0.0; // Координата y
+	float z = 0.0; // Координата z
 };
-
+// Структура с координатами точки центра траекторной окружности
 struct struct_turn {
-	float x = 0.0;
-	float y = 0.0;
-	float z = 0.0;
-	bool flag_turn = false;
+	float x = 0.0; // Координата x
+	float y = 0.0; // Координата y
+	float z = 0.0; // Координата z
+	bool flag_turn = false; // Метка
 };
-
+// Структура с координатами точки пересечения сферы и окружности ЛА
 struct struct_contact {
-	float x = 0.0;
-	float y = 0.0;
-	float z = 0.0;
+	float x = 0.0; // Координата x
+	float y = 0.0; // Координата y
+	float z = 0.0; // Координата z
 };
