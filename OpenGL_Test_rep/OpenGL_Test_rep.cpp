@@ -13,17 +13,8 @@
 
 using namespace std;
 
-
-// Раздел с описанием глобальных констант
-//
-// Ускорение свободного падения
-float GLOBAL_EARTH_ACSELERATION = 9.8f;
-
 //
 // Инициализация структур для хранения данных специальных точек
-//
-// Инициализация ???
-struct_turn init;
 // Структура для координат точки пересечения траектории ЛА и сферы
 // В случае отстутствия точек пересечения - координаты крайней точки траектории ЛА
 struct_inter inter;
@@ -46,7 +37,7 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
 {
 
     // Массив точек: первая - на расстоянии радиуса виража от начальной точки, вторая - центр окружности виража ЛА
-    float vert_1[] = { 0, 0, H + R_turn / sin((90 - pitch) * M_PI / 180), inter.x, inter.y, inter.z + R_turn / sin((90 - pitch) * M_PI / 180) };
+    float vert_1[] = { 0, 0, H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), inter.x, inter.y, inter.z + R_turn / sin((90 - pitch) * GLOBAL_PI / 180) };
 
     // Точки для построения окружности
     float x_rotate, y_rotate, z_rotate = 0;
@@ -55,7 +46,7 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
     float alfa = 0;
 
     // Счетчик окружности для отрисовки
-    float circle_def = R_turn * 25;
+    float circle_def = 48;
 
     // Установка размера точки - начала ухода ЛА
 
@@ -94,8 +85,8 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
     // Поворот окружности на угол рысканья
     glRotatef(-(90 - yaw), 0.0f, 1.0f, 0.0f);
     // Поворот окружности на угол танагажа
-    glRotatef(-pitch - 10, 0.0f, 0.0f, 1.0f);
-
+    glRotatef(-pitch * sin(pitch * GLOBAL_PI / 180) + pitch * cos(pitch * GLOBAL_PI / 180), 0.0f, 0.0f, 1.0f);
+    glRotatef(90, 0.0f, 0.0f, 1.0f);
     // Начало рисования окружности - траектории ухода ЛА
     glBegin(GL_LINE_STRIP);
     // Установка цвета траектории
@@ -107,7 +98,7 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
         if (count_circle > 19)
         {
             // Нахождение угла поворота точки
-            alfa = -count_circle / 50.0f * M_PI;
+            alfa = -count_circle / 50.0f * GLOBAL_PI;
             // Нахождение координат точки окружности
             x_rotate = cos(alfa) * R_turn;
             y_rotate = sin(alfa) * R_turn;
@@ -122,12 +113,11 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
         }
     }
     glEnd();
-
     // Цикл - построение сфер на траектории
     for (int count_sphere = 0; count_sphere < int(circle_def); count_sphere++)
     {
         // Нахождение угла поворота точки
-        alfa = -count_sphere / 50.0f * M_PI;
+        alfa = -count_sphere / 50.0f * GLOBAL_PI;
         // Нахождение координат точки окружности
         x_rotate = cos(alfa) * R_turn;
         y_rotate = sin(alfa) * R_turn;
@@ -136,7 +126,7 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
         {
             Draw_sphere_traectory(x_rotate, y_rotate, 0.05); // Вызов функции построения сферы
         }
-        if (count_sphere == (int(circle_def) - 2))
+        if (count_sphere == (int(circle_def) - 1))
         {
             Draw_sphere_traectory(x_rotate, y_rotate, 0.1); // Вызов функции построения сферы
         }
@@ -154,8 +144,9 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
 ***********************************************************************************/
 int main(void)
 {
+    // Подключение вывода кириллицы в консоль
     setlocale(LC_ALL, "Russian");
-    //SetConsoleCP(1251);
+
     float H; // Начальная высота ЛА
     float V; // Скорость ЛА
     float pitch; // Угол тангажа ЛА
@@ -163,7 +154,7 @@ int main(void)
     float x_sphere; // Координата x полусферы
     float y_sphere; // Координата y полусферы
     float radius_sphere; // Радиус полусферы
-    bool flag_cross; // Метка пересечения траектории ЛА и полусферы
+    bool flag_cross = false; // Метка пересечения траектории ЛА и полусферы
 
     float R_turn; // Значение радиуса виража
     float n_y; // Значение продольной перегрузки
@@ -172,7 +163,9 @@ int main(void)
 
     float cos_roll; // Значение косинуса угла крена
 
-    bool flag_all;
+    bool flag_all; // Метка захода в основной цикл программы
+
+    int count_work_user = 1; // Номер пакета данных пользователя
 
     // Коэффициенты масштабирования окна
     float coefficient_scale_big = 1000;
@@ -221,7 +214,7 @@ int main(void)
         glfwTerminate(); // Уничтожение окна
         return -1;
     }
-    //glfwMaximizeWindow(window);
+    glfwMaximizeWindow(window);
     // Создание контекста окна
     glfwMakeContextCurrent(window);
 
@@ -248,23 +241,23 @@ int main(void)
         {
             flag_console = true;
             Sleep(250);
+            count_work_user++;
         }
         if (flag_console == true)
         {
             getline(fin, file_buffer);
-            cout << file_buffer << endl;
             if (fin.eof())
             {
                 fin.clear();
                 fin.seekg(0);
                 getline(fin, file_buffer);
+                count_work_user = 1;
             }
+            cout << "Пакет начальных данных номер - " << count_work_user << ";" << endl;
             getline(fin, file_buffer);
             H = stof(file_buffer);
-            cout << H << " = H" << endl;
             getline(fin, file_buffer);
             V = stof(file_buffer);
-            cout << V << " = V" << endl;
             getline(fin, file_buffer);
             pitch = stof(file_buffer);
             getline(fin, file_buffer);
@@ -286,7 +279,7 @@ int main(void)
 
             flag_all = inter.flag_inter;
 
-            cos_roll = atanf(tanf(yaw * M_PI / 180) / cosf(pitch * M_PI / 180));
+            cos_roll = atanf(tanf(yaw * GLOBAL_PI / 180) / cosf(pitch * GLOBAL_PI / 180));
 
             cos_roll = cosf(cos_roll);
 
@@ -301,11 +294,9 @@ int main(void)
             {
                 n_y = 1 / cos_roll;
                 R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
+                R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
+                cout << "Радиус виража = " << R_turn << " километров;" << endl;
             }
-
-            R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
-
-            cout << "Радиус виража = " << R_turn << " метров;" << endl;
 
             angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, inter.x, inter.y, 0);
 
@@ -316,11 +307,11 @@ int main(void)
                 bf_x = inter.x;
                 bf_y = inter.y;
                 bf_z = inter.z;
-                inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * M_PI / 180), V, pitch, yaw, x_sphere, y_sphere, cos(angle_radius * M_PI / 180) * (radius_sphere + R_turn));
+                inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, cos(angle_radius * GLOBAL_PI / 180) * (radius_sphere + R_turn));
                 turn.x = inter.x;
                 turn.y = inter.y;
                 turn.z = inter.z;
-                inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * M_PI / 180), V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
+                inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
                 contact.x = inter.x;
                 contact.y = inter.y;
                 contact.z = inter.z;
@@ -433,11 +424,17 @@ int main(void)
         // Смена буфера
         glfwSwapBuffers(window);
 
+        // Окончание работы программы при помощи нажатия клавиши Escape
+        if (GetKeyState(VK_ESCAPE) < 0)
+        {
+            break;
+        }
+
         // Отслеживание событий внутри окна
         glfwPollEvents();
     }
-
     // Уничтожение окна
     glfwTerminate();
+    // Окончание программы
     return 0;
 }

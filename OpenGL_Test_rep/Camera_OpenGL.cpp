@@ -15,7 +15,7 @@ float turn_y = 0;
 float turn_z = 0;
 GLfloat mat[16];
 bool flag = true;
-/*
+
 /***********************************************************************************
  * @brief Функция движения камеры по сцене
  * @return Ничего
@@ -65,8 +65,8 @@ void Move_camera(bool flag_console)
         turn_z -= 0.1f;
     }
 
-    float angle_x = -turn_x / 180 * M_PI;
-    float angle_y = -turn_x / 180 * M_PI;
+    float angle_x = -turn_x / 180 * GLOBAL_PI;
+    float angle_y = -turn_x / 180 * GLOBAL_PI;
 
     float speed_x = 0;
     float speed_y = 0;

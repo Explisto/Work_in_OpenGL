@@ -33,9 +33,9 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 	float y_1, y_2;
 
 	// Определение проекций вектора скорости на оси координат
-	V_x = V * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
-	V_y = V * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
-	V_z = V * sin(pitch * M_PI / 180);
+	V_x = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
+	V_y = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
+	V_z = V * sin(pitch * GLOBAL_PI / 180);
 
 	// Присвоение значений компонентам направляющего вектора прямой
 	m = V_x;
@@ -48,8 +48,6 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 	C = pow(x_sp, 2) + pow(y_sp, 2) + pow(H, 2) - pow(R_sp, 2);
 	// Вычисление дискриминанта
 	D = pow(B, 2) - 4 * A * C;
-
-	cout << D << " = Discr" << endl;
 	
 	// Если дискриминант меньше нуля - нет пересечения прямой и сферы
 	if (D < 0)
@@ -112,13 +110,13 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 	float distance_1, distance_2;
 	float vector_long = V / 20 * 100;
 
-	a_x = vector_long * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
-	a_y = -vector_long * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
-	a_z = H + vector_long * sin(pitch * M_PI / 180);
+	a_x = vector_long * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
+	a_y = -vector_long * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
+	a_z = H + vector_long * sin(pitch * GLOBAL_PI / 180);
 
-	m = V * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
-	n = V * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
-	p = V * sin(pitch * M_PI / 180);
+	m = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
+	n = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
+	p = V * sin(pitch * GLOBAL_PI / 180);
 
 	if (p == 0)
 	{
@@ -152,9 +150,9 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 
 	float t_turn;
 
-	m_track = V * cos(pitch * M_PI / 180) * sin(yaw * M_PI / 180);
-	n_track = V * cos(pitch * M_PI / 180) * cos(yaw * M_PI / 180);
-	p_track = V * sin(pitch * M_PI / 180);
+	m_track = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
+	n_track = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
+	p_track = V * sin(pitch * GLOBAL_PI / 180);
 
 	t_turn = -(turn_x * m_track + turn_y * n_track + turn_z * p_track - p_track * H) / (pow(m_track,2) + pow(n_track, 2) + pow(p_track, 2));
 
@@ -178,7 +176,7 @@ float Angle_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, f
 	// Нахождение угла между двумя векторами
 	cos_angle = (x_1 * x_2 + y_1 * y_2 + z_1 * z_2) / ((sqrt(pow(x_1, 2) + pow(y_1, 2) + pow(z_1, 2))) * sqrt(pow(x_2, 2) + pow(y_2, 2) + pow(z_2, 2)));
 
-	return acos(cos_angle) * 180 / M_PI;
+	return acos(cos_angle) * 180 / GLOBAL_PI;
 }
 
 /***********************************************************************************

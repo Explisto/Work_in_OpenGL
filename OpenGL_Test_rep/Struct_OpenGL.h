@@ -1,33 +1,27 @@
 // Файл с структурами
 
-typedef struct struct_inter {
-	float x;
-	float y;
-	float z;
-	bool flag_inter;
+struct struct_inter {
+	float x = 0.0;
+	float y = 0.0;
+	float z = 0.0;
+	bool flag_inter = false;
 };
 
-typedef struct struct_track {
-	float x;
-	float y;
-	float z;
+struct struct_track {
+	float x = 0.0;
+	float y = 0.0;
+	float z = 0.0;
 };
 
-typedef struct struct_turn {
-	float x;
-	float y;
-	float z;
-	bool flag_turn;
+struct struct_turn {
+	float x = 0.0;
+	float y = 0.0;
+	float z = 0.0;
+	bool flag_turn = false;
 };
 
-typedef struct struct_init {
-	float x;
-	float y;
-	float z;
-};
-
-typedef struct struct_contact {
-	float x;
-	float y;
-	float z;
+struct struct_contact {
+	float x = 0.0;
+	float y = 0.0;
+	float z = 0.0;
 };
