@@ -7,10 +7,11 @@
 #include <iostream>
 #include <windows.h>
 #include <gl/gl.h>
-#include <glut.h>
+#include <gl/glut.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdlib.h>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -49,6 +50,10 @@ void Move_Camera(bool flag_console);
 struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float x_sp, float z_sp, float R_sp);
 
 struct_inter Not_intersection(float pitch, float yaw, float H, float V);
+
+struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw);
+
+struct_contact Contact_aircraft(float inter_x, float inter_y, float inter_z, float H, float V, float pitch, float yaw, float R_turn);
 
 void Track_aircraft(float x_inter, float y_inter, float z_inter, float H, float pitch, float yaw);
 

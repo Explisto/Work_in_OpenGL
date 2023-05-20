@@ -17,3 +17,5 @@ void Interface_low(float H, float V, float pitch, float yaw, float x_sphere, flo
     cout << "Радиус полусферы: " << radius_sphere << " метров;" << endl;
     cout << "===================================================" << endl;
 }
+
+

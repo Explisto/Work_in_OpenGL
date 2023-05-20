@@ -314,7 +314,18 @@ void Axe()
 void Aircraft_traectory(float H, float x_end, float y_end, float z_end)
 {
     // Настройка вершин
-    float vert_x[] = { 0,0,H, x_end, y_end, z_end };
+    float vert_x[] = { 0, 0, H, x_end, y_end, z_end };
+
+    // Отрисовка начального положения ЛА
+    glPointSize(20);
+    glBegin(GL_POINTS);
+
+    // Установка цвета примитива
+    glColor3d(1.0, 0.0, 0.0);
+    // Координаты начальной точки ЛА
+    glVertex3d(0, 0, H);
+
+    glEnd();
 
     // Размер линии
     glLineWidth(10);

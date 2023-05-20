@@ -1,7 +1,7 @@
 // Подключение заголовочного файла
 #include "Function_OpenGL.h"
 
-typedef struct struct_position_camera {
+struct struct_position_camera {
     float x = 12;
     float y = -12;
     float z = -10;

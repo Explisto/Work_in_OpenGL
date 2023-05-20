@@ -163,6 +163,27 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 	return { x_1, y_1, z_1 };
 }
 
+struct_contact Contact_aircraft(float inter_x, float inter_y, float inter_z, float H, float V, float pitch, float yaw, float R_turn)
+{
+	float x_1, y_1, z_1;
+
+	float m_contact, n_contact, p_contact;
+
+	float t_contact;
+
+	m_contact = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
+	n_contact = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
+	p_contact = V * sin(pitch * GLOBAL_PI / 180);
+
+	t_contact = Disrance_two_vectors(0, 0, H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), 0, 0, 0);
+
+	x_1 = m_contact * t_contact;
+	y_1 = -n_contact * t_contact;
+	z_1 = p_contact * t_contact + H;
+
+	return { x_1, y_1, z_1 };
+}
+
 /***********************************************************************************
  * @brief Функция находит угол между двумя векторами
  * @param x_1, y_1, z_1 - координаты первого вектора
