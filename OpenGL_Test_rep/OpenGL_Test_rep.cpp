@@ -45,7 +45,7 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
     float alfa = 0;
 
     // Счетчик окружности для отрисовки
-    float circle_def = 48;
+    float circle_def = 50;
 
     // Построение траектории ухода ЛА
     glColor3f(0.1f, 1.0f, 0.2f);
@@ -436,8 +436,16 @@ int main(void)
             Show_plane();
             // Отображение траектории ЛА
             Aircraft_traectory(H, inter.x, inter.y, inter.z);
-            // Отрисовка полуокружности ухода ЛА
-            Aircraft_turn(H, V, pitch, yaw, radius_sphere, R_turn);
+            // Условие, если пересечение траектории со сферой происходит за основной плоскостью
+            if (inter.z >= 0)
+            {
+                // Отрисовка полуокружности ухода ЛА
+                Aircraft_turn(H, V, pitch, yaw, radius_sphere, R_turn);
+            }
+            else
+            {
+                End_sphere(inter.x, inter.y, inter.z);
+            }
             // Возвращение матрицы из стека
             glPopMatrix();
         }
