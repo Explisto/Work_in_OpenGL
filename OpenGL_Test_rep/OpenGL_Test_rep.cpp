@@ -138,18 +138,6 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
 
 }
 
-void DrawScreen()
-{
-    char str[]{ "hello" };
-    //m_id = glGenLists(255);
-    glColor3f(1.0, 1.0, 0.0);
-    glListBase(1000);
-    glRasterPos2i(0.5, 0.5);
-    glCallLists(strlen(str), GL_UNSIGNED_BYTE, str);
-    //glutBitmapString
-    //Text
-}
-
 /***********************************************************************************
  * @brief Основное тело программы
  * @return Ничего
@@ -254,19 +242,18 @@ int main(void)
     // Основной цикл программы, пока не закрыто окно glfw
     while (!glfwWindowShouldClose(window))
     {
-        DrawScreen();
         if (GetKeyState(VK_NUMPAD0) < 0)
         {
             sign_delta = -sign_delta;
-            Sleep(50);
+            Sleep(250);
         }
         if (GetKeyState(VK_NUMPAD1) < 0)
         {
             flag_console = true;
             H_input = H_input + (H_delta * sign_delta);
-            if (H_input < 250)
+            if (H_input < 1000)
             {
-                H_input = 250;
+                H_input = 1000;
             }
             if (H_input > 12000)
             {
@@ -303,19 +290,28 @@ int main(void)
         if (GetKeyState(VK_NUMPAD5) < 0)
         {
             flag_console = true;
-            X_input = X_input + (X_delta * sign_delta);
+            if (Check_input_data((X_input + (X_delta * sign_delta)) / coefficient_scale_big, Y_input / coefficient_scale_big, Radius_input / coefficient_scale_big))
+            {
+                X_input = X_input + (X_delta * sign_delta);
+            }
             Sleep(50);
         }
         if (GetKeyState(VK_NUMPAD6) < 0)
         {
             flag_console = true;
-            Y_input = Y_input + (Y_delta * sign_delta);
+            if (Check_input_data(X_input / coefficient_scale_big, (Y_input + (Y_delta * sign_delta)) / coefficient_scale_big, Radius_input / coefficient_scale_big))
+            {
+                Y_input = Y_input + (Y_delta * sign_delta);
+            }
             Sleep(50);
         }
         if (GetKeyState(VK_NUMPAD7) < 0)
         {
             flag_console = true;
-            Radius_input = Radius_input + (Radius_delta * sign_delta);
+            if (Check_input_data(X_input / coefficient_scale_big, Y_input / coefficient_scale_big, (Radius_input + (Radius_delta * sign_delta)) / coefficient_scale_big))
+            {
+                Radius_input = Radius_input + (Radius_delta * sign_delta);
+            }
             if (Radius_input < 500)
             {
                 Radius_input = 500;

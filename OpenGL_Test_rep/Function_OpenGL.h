@@ -1,6 +1,6 @@
-#include "Struct_OpenGL.h"
+п»ї#include "Struct_OpenGL.h"
 
-// Подключение библиотек
+// ГЏГ®Г¤ГЄГ«ГѕГ·ГҐГ­ГЁГҐ ГЎГЁГЎГ«ГЁГ®ГІГҐГЄ
 
 #include "glew.h" 
 #include "glfw3.h"
@@ -20,14 +20,14 @@
 
 #pragma once
 
-// Раздел с описанием глобальных констант
+// ГђГ Г§Г¤ГҐГ« Г± Г®ГЇГЁГ±Г Г­ГЁГҐГ¬ ГЈГ«Г®ГЎГ Г«ГјГ­Г»Гµ ГЄГ®Г­Г±ГІГ Г­ГІ
 //
-// Ускорение свободного падения
+// Г“Г±ГЄГ®Г°ГҐГ­ГЁГҐ Г±ГўГ®ГЎГ®Г¤Г­Г®ГЈГ® ГЇГ Г¤ГҐГ­ГЁГї
 float GLOBAL_EARTH_ACSELERATION = 9.8f;
-// Число PI
+// Г—ГЁГ±Г«Г® PI
 float GLOBAL_PI = 3.1415926535f;
 
-// Объявление функций
+// ГЋГЎГєГїГўГ«ГҐГ­ГЁГҐ ГґГіГ­ГЄГ¶ГЁГ©
 
 void Cursors();
 
@@ -62,5 +62,7 @@ void Track_aircraft(float x_inter, float y_inter, float z_inter, float H, float 
 float Angle_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2);
 
 float Disrance_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2);
+
+bool Check_input_data(float A, float B, float C, float x_r, float y_r, float R);
 
 void Interface_low(float H, float V, float pitch, float yaw, float x_sphere, float y_sphere, float x_radius);

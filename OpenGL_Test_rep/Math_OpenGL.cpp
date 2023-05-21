@@ -215,3 +215,53 @@ float Disrance_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2
 
 	return distance;
 }
+/***********************************************************************************
+ * @brief Функция находит расстояние между двумя точками
+ * @param x_1, y_1, z_1 - координаты первой точки
+ * @param x_2, y_2, z_2 - координаты второй точки
+ * @return Расстояние между двумя точками
+***********************************************************************************/
+bool Check_input_data(float x_r, float y_r, float R)
+{
+	float distance;
+
+	float A = 0;
+	float B = 0;
+	float C = 0;
+
+	//1 случай
+	A = 1;
+	distance = abs((A * x_r + B * y_r + C) / (sqrt(powf(A, 2) + powf(B, 2))));
+	if (distance < R)
+	{
+		return false;
+	}
+
+	// 2 случай
+	A = 0;
+	B = 1;
+	distance = abs((A * x_r + B * y_r + C) / (sqrt(powf(A, 2) + powf(B, 2))));
+	if (distance < R)
+	{
+		return false;
+	}
+	// 3 случай
+	A = 1;
+	B = 0;
+	C = -11;
+	distance = abs((A * x_r + B * y_r + C) / (sqrt(powf(A, 2) + powf(B, 2))));
+	if (distance < R)
+	{
+		return false;
+	}
+	// 4 случай
+	A = 0;
+	B = 1;
+	C = -11;
+	distance = abs((A * x_r + B * y_r + C) / (sqrt(powf(A, 2) + powf(B, 2))));
+	if (distance < R)
+	{
+		return false;
+	}
+	return true;
+}
