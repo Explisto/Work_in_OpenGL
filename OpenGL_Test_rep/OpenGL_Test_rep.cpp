@@ -35,7 +35,6 @@ struct_contact contact;
 ***********************************************************************************/
 void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float R_turn)
 {
-    float t_r;
     // Массив точек: первая - на расстоянии радиуса виража от начальной точки, вторая - центр окружности виража ЛА
     float vert_1[] = { 0, 0, H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), inter.x, inter.y, inter.z + R_turn / sin((90 - pitch) * GLOBAL_PI / 180) };
 
@@ -47,31 +46,6 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
 
     // Счетчик окружности для отрисовки
     float circle_def = 48;
-
-    // Установка размера точки - начала ухода ЛА
-
-    // Установка размера точки - точка пересечения сфер
-    //glPointSize(20);
-    //glBegin(GL_POINTS);
-
-    // Установка цвета примитива
-    //glColor3d(0.8, 0.2, 0.5);
-    // Координаты точки контакта сфер
-    //glVertex3d(contact.x, contact.y, contact.z);
-
-    //glEnd();
-
-    // Установка размера точки - точка центра окружности ухода ЛА
-    //glPointSize(20);
-    //glBegin(GL_POINTS);
-
-    // Установка цвета примитива
-    //glColor3d(1, 0.8, 0);
-    // Координаты центра окружности ухода ЛА
-    //glVertex3d(turn.x, turn.y, turn.z);
-    //glVertex3d(0, 0, H);
-
-    //glEnd();
 
     // Построение траектории ухода ЛА
     glColor3f(0.1f, 1.0f, 0.2f);
@@ -146,8 +120,6 @@ int main(void)
 {
     // Подключение вывода кириллицы в консоль
     setlocale(LC_ALL, "Russian");
-
-
     //***************************************************************************************
 
     // Входные (начальные параметры)
@@ -198,11 +170,11 @@ int main(void)
     GLFWwindow* window;
 
     // Размер выходного окна glfw
-    int width = 1000;
-    int height = 1000;
+    int viewportWidth = 600;
+    int viewportHeight = 600;
 
     // Коэффициент масштаба экрана
-    float ratio = width / height;
+    float ratio = viewportWidth / viewportHeight;
 
     // Переменная метка нажатия клавиши смены значений
     bool flag_console = true;
@@ -212,14 +184,14 @@ int main(void)
         return -1;
 
     // Создание сового окна с заданными размерами
-    window = glfwCreateWindow(width, height, "Aircraft", NULL, NULL);
+    window = glfwCreateWindow(viewportWidth, viewportHeight, "Aircraft", NULL, NULL);
     // Если окно не создано
     if (!window)
     {
         glfwTerminate(); // Уничтожение окна
         return -1;
     }
-    //glfwMaximizeWindow(window);
+    glfwMaximizeWindow(window);
     // Создание контекста окна
     glfwMakeContextCurrent(window);
 
@@ -235,6 +207,8 @@ int main(void)
     cout << "!Уход ЛА по круговой траектории!" << endl;
     cout << "===================================================" << endl;
 
+    float buf_h = viewportHeight;
+    float buf_w = viewportWidth;
     ///****************************************************************
     // Математические расчеты пересечения заданной траектории и сферы
     ///************************************************************
@@ -242,6 +216,26 @@ int main(void)
     // Основной цикл программы, пока не закрыто окно glfw
     while (!glfwWindowShouldClose(window))
     {
+        // Отслеживание изменения размера окна
+        glfwGetFramebufferSize(window, &viewportWidth, &viewportHeight);
+
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if ((buf_w != viewportWidth) || buf_h != viewportHeight)
+        {
+            glViewport(0, 0, viewportWidth, viewportHeight);
+            //glLoadIdentity();
+            ratio = (float)viewportWidth / (float)viewportHeight;
+            //glOrtho(-ratio, ratio, -1, 1, -1, 1);
+            glScalef(ratio, ratio, ratio);
+            buf_w = viewportWidth;
+            buf_h = viewportHeight;
+        }
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        // Окончание работы программы при помощи нажатия клавиши Escape
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+
         if (GetKeyState(VK_NUMPAD0) < 0)
         {
             sign_delta = -sign_delta;
@@ -369,7 +363,7 @@ int main(void)
                 turn.x = inter.x;
                 turn.y = inter.y;
                 turn.z = inter.z;
-                inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
+                inter = Contact_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw, R_turn);
                 contact.x = inter.x;
                 contact.y = inter.y;
                 contact.z = inter.z;
@@ -377,7 +371,6 @@ int main(void)
                 inter.y = bf_y;
                 inter.z = bf_z;
                 track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
-                //Draw_sphere(track.x, track.y, 2);
             }
 
             cout << "Пересечение со сферой - ";
@@ -416,24 +409,10 @@ int main(void)
         }
         ////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////
-        // Установка цвета экрана
+        // Установка цвета фона
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         // Очистка буфера цвета и глубин
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        ///////////////////////////////////////////////////////////////////////////////
-        // Изменение размера окна
-
-        // Отслеживание изменения окна
-        glfwGetWindowSize(window, &width, &height);
-        //
-        glViewport(0, 0, width, height);
-        //
-        glScissor(0, 0, width, height);
-        //
-        //glFrustum(3, 3, 3, 3, 2, 80);
-        //
-        /////////////////////////////////////////////////////////////////////////////
 
         if ((flag_all == true) && (R_turn != 0))
         {
@@ -443,8 +422,14 @@ int main(void)
             Move_camera(flag_console);
             // Отрисовка осей
             Axe();
+            // Сфера - начала траектории ЛА
+            Begin_sphere(H);
             // Отрисовка направляющих стрелок на осях
             Cursors();
+            // Сфера - пересечение траектории и сферы
+            Inter_sphere(inter.x, inter.y, inter.z);
+            // Сфера - пересечение траектории и сферы
+            Contact_sphere(contact.x, contact.y, contact.z);
             // Рисование полусферы
             Draw_sphere(x_sphere, -y_sphere, radius_sphere);
             // Отрисовка плоскости
@@ -464,6 +449,8 @@ int main(void)
             Move_camera(flag_console);
             // Отрисовка осей
             Axe();
+            // Сфера начала траектории ЛА
+            Begin_sphere(H);
             // Отрисовка направляющих стрелок на осях
             Cursors();
             // Рисование полусферы
@@ -474,6 +461,8 @@ int main(void)
             inter = Not_intersection(pitch, yaw, H, V);
             // Построение траектории ЛА
             Aircraft_traectory(H, inter.x, inter.y, inter.z);
+            // Построение конечной точки ЛА
+            End_sphere(inter.x, inter.y, inter.z);
             // Возвращение матрицы из стека
             glPopMatrix();
         }
@@ -483,12 +472,6 @@ int main(void)
 
         // Смена буфера
         glfwSwapBuffers(window);
-
-        // Окончание работы программы при помощи нажатия клавиши Escape
-        if (GetKeyState(VK_ESCAPE) < 0)
-        {
-            break;
-        }
 
         // Отслеживание событий внутри окна
         glfwPollEvents();

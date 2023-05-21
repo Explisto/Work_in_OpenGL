@@ -1,6 +1,6 @@
 ﻿#include "Struct_OpenGL.h"
 
-// Ïîäêëþ÷åíèå áèáëèîòåê
+// Подключение заголовочных файлов
 
 #include "glew.h" 
 #include "glfw3.h"
@@ -20,14 +20,14 @@
 
 #pragma once
 
-// Ðàçäåë ñ îïèñàíèåì ãëîáàëüíûõ êîíñòàíò
+// Раздел описания глобальных переменных
 //
-// Óñêîðåíèå ñâîáîäíîãî ïàäåíèÿ
+// Ускорение свободного падения
 float GLOBAL_EARTH_ACSELERATION = 9.8f;
-// ×èñëî PI
+// Число PI
 float GLOBAL_PI = 3.1415926535f;
 
-// Îáúÿâëåíèå ôóíêöèé
+// Объявление функций
 
 void Cursors();
 
@@ -53,9 +53,17 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V);
 
 struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw);
 
-struct_contact Contact_aircraft(float inter_x, float inter_y, float inter_z, float H, float V, float pitch, float yaw, float R_turn);
+struct_inter Contact_aircraft(float inter_x, float inter_y, float inter_z, float H, float V, float pitch, float yaw, float R_turn);
 
 void Track_aircraft(float x_inter, float y_inter, float z_inter, float H, float pitch, float yaw);
+
+void Begin_sphere(float H);
+
+void End_sphere(float x, float y, float z);
+
+void Inter_sphere(float x, float y, float z);
+
+void Contact_sphere(float x, float y, float z);
 
 //
 

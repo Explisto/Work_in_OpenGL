@@ -35,6 +35,67 @@ void Cursors()
     // Метка об отключении использования массива вершин
     glDisableClientState(GL_VERTEX_ARRAY);
 }
+
+/***********************************************************************************
+ * @brief Создание начальной точки движения ЛА
+ * @return Ничего
+***********************************************************************************/
+void Begin_sphere(float H)
+{
+    glPushMatrix();
+    glTranslatef(0, 0, H);
+    Draw_sphere_traectory(0, 0, 0.1);
+    glPopMatrix();
+}
+/***********************************************************************************
+ * @brief Создание конечной точки движения ЛА в случае отстутствия точки касания с полусферой
+ * @return Ничего
+***********************************************************************************/
+void End_sphere(float x, float y, float z)
+{
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    Draw_sphere_traectory(0, 0, 0.1);
+    glPopMatrix();
+}
+/***********************************************************************************
+ * @brief Создание сферы пересечения траектории ЛА и полусферы
+ * @return Ничего
+***********************************************************************************/
+void Inter_sphere(float x, float y, float z)
+{
+    //cout << x << endl;
+    //cout << y << endl;
+    //cout << z << endl;
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    Draw_sphere_traectory(0, 0, 0.01);
+    glPopMatrix();
+    //glPointSize(2);
+    //glBegin(GL_POINTS);
+    //glColor3d(0, 1, 0);
+    //glVertex3d(x, y, z); // первая точка
+    //glEnd();
+}
+/***********************************************************************************
+ * @brief Создание сферы - точки касания окружности и полусферы
+ * @return Ничего
+***********************************************************************************/
+void Contact_sphere(float x, float y, float z)
+{
+    //cout << x << endl;
+    //cout << y << endl;
+    //cout << z << endl;
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    Draw_sphere_traectory(0, 0, 0.01);
+    glPopMatrix();
+    //glPointSize(2);
+    //glBegin(GL_POINTS);
+    //glColor3d(0, 1, 0);
+    //glVertex3d(x, y, z); // первая точка
+    //glEnd();
+}
 /***********************************************************************************
  * @brief Создание полусферы и сетки для нее
  * @param x_sp Координата центра сферы по оси oX
@@ -151,7 +212,7 @@ void Draw_sphere_traectory(float x_sp, float y_sp, float r)
     }
     else
     {
-        glColor3f(0.4f, 0.1f, 0.8f);
+        glColor3f(0.5f, 0.5f, 0.8f);
     }
     // Горизонтальная плоскость
     for (float i = 0.0; i < 1.0; i += di)
@@ -315,17 +376,6 @@ void Aircraft_traectory(float H, float x_end, float y_end, float z_end)
 {
     // Настройка вершин
     float vert_x[] = { 0, 0, H, x_end, y_end, z_end };
-
-    // Отрисовка начального положения ЛА
-    glPointSize(20);
-    glBegin(GL_POINTS);
-
-    // Установка цвета примитива
-    glColor3d(1.0, 0.0, 0.0);
-    // Координаты начальной точки ЛА
-    glVertex3d(0, 0, H);
-
-    glEnd();
 
     // Размер линии
     glLineWidth(10);
