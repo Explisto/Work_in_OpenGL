@@ -1,10 +1,8 @@
 ﻿// Main - файл
-//
-
 // Подключение заголовочного файла
 #include "Function_OpenGL.h"
 
- // Подключение модулей
+// Подключение модулей 
 #include "Math_OpenGL.cpp"
 #include "Interface_OpenGL.cpp"
 #include "Camera_OpenGL.cpp"
@@ -164,7 +162,7 @@ int main(void)
     // Коэффициенты масштабирования окна
     float coefficient_scale_big = 1000.0;
     float coefficient_scale_small = 100.0;
-    // угол между векторами траектории и центра полусферы
+    // Угол между векторами траектории и центра полусферы
     float angle_radius;
 
     // Указатель на созданный экземпляр окна
@@ -184,69 +182,80 @@ int main(void)
     if (!glfwInit())
         return -1;
 
-    // Создание сового окна с заданными размерами
+    // Создание нового окна с заданными размерами
     window = glfwCreateWindow(viewportWidth, viewportHeight, "Aircraft", NULL, NULL);
+
     // Если окно не создано
     if (!window)
     {
         glfwTerminate(); // Уничтожение окна
         return -1;
     }
+    // Разворот окна на весь экран
     glfwMaximizeWindow(window);
     // Создание контекста окна
     glfwMakeContextCurrent(window);
 
+    // Проверка инициализации библиотеки GLEW
     if (glewInit() != GLEW_OK)
     {
         cout << "GLEW is not\n";
         return -1;
     }
-
+    // Установка дальности прорисовки сцены
     glFrustum(-1, 1, -1, 1, 1, 80);
 
+    // Сообщение
     cout << "===================================================" << endl;
     cout << "!Уход ЛА по круговой траектории!" << endl;
     cout << "===================================================" << endl;
 
+    // Установка буферных переменных для размера окна
     float buf_h = viewportHeight;
     float buf_w = viewportWidth;
     ///****************************************************************
     // Математические расчеты пересечения заданной траектории и сферы
     ///************************************************************
-    ///************************************************************
+    
     // Основной цикл программы, пока не закрыто окно glfw
     while (!glfwWindowShouldClose(window))
     {
         // Отслеживание изменения размера окна
         glfwGetFramebufferSize(window, &viewportWidth, &viewportHeight);
 
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Отслеживание изменения размера окна
         if ((buf_w != viewportWidth) || buf_h != viewportHeight)
         {
+            // Изменение окна OpenGL
             glViewport(0, 0, viewportWidth, viewportHeight);
-            //glMatrixMode(GL_PROJECTION);
-            //glLoadIdentity();
+            // Коэффициент масштабирования
             ratio = (float)viewportWidth / (float)viewportHeight;
+            // Изменение матрицы проекции
             glOrtho(ratio, ratio, 2, 2, 2, 80);
-            //glScalef(ratio, ratio, ratio);
+            // Установка новых значений
             buf_w = viewportWidth;
             buf_h = viewportHeight;
         }
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // Окончание работы программы при помощи нажатия клавиши Escape
         if (glfwGetKey(window, GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window, GLFW_TRUE);
 
+        // Блок - отслеживание действий пользователя при изменении входных параметров
+        // Изменение знака изменения
         if (GetKeyState(VK_NUMPAD0) < 0)
         {
+            // Изменение знака
             sign_delta = -sign_delta;
             Sleep(250);
         }
+        // Изменение значения начальной высоты
         if (GetKeyState(VK_NUMPAD1) < 0)
         {
             flag_console = true;
+            // Изменение значения
             H_input = H_input + (H_delta * sign_delta);
+            // Проверки на введенные значения
             if (H_input < 1000)
             {
                 H_input = 1000;
@@ -255,8 +264,10 @@ int main(void)
             {
                 H_input = 12000;
             }
+            // Бездействие от залипания клавиш
             Sleep(50);
         }
+        // Далее - аналогично
         if (GetKeyState(VK_NUMPAD2) < 0)
         {
             flag_console = true;
@@ -286,6 +297,7 @@ int main(void)
         if (GetKeyState(VK_NUMPAD5) < 0)
         {
             flag_console = true;
+            // Проверки, чтобы полусфера не вышла за пределы отведенной плоскости
             if (Check_input_data((X_input + (X_delta * sign_delta)) / coefficient_scale_big, Y_input / coefficient_scale_big, Radius_input / coefficient_scale_big))
             {
                 X_input = X_input + (X_delta * sign_delta);
@@ -295,6 +307,7 @@ int main(void)
         if (GetKeyState(VK_NUMPAD6) < 0)
         {
             flag_console = true;
+            // Проверки, чтобы полусфера не вышла за пределы отведенной плоскости
             if (Check_input_data(X_input / coefficient_scale_big, (Y_input + (Y_delta * sign_delta)) / coefficient_scale_big, Radius_input / coefficient_scale_big))
             {
                 Y_input = Y_input + (Y_delta * sign_delta);
@@ -304,6 +317,7 @@ int main(void)
         if (GetKeyState(VK_NUMPAD7) < 0)
         {
             flag_console = true;
+            // Проверки, чтобы полусфера не вышла за пределы отведенной плоскости
             if (Check_input_data(X_input / coefficient_scale_big, Y_input / coefficient_scale_big, (Radius_input + (Radius_delta * sign_delta)) / coefficient_scale_big))
             {
                 Radius_input = Radius_input + (Radius_delta * sign_delta);
@@ -318,53 +332,39 @@ int main(void)
             }
             Sleep(50);
         }
-
+        // Если произошло изменение входных параметров
         if (flag_console == true)
         {
-            // Пересчет коэффициентов
+            // Пересчет значений с учетом коэффициентов
             H = H_input / coefficient_scale_big;
             V = V_input / coefficient_scale_small;
             x_sphere = X_input / coefficient_scale_big;
             y_sphere = Y_input / coefficient_scale_big;
             radius_sphere = Radius_input / coefficient_scale_big;
 
+            // Нахождение точек пересечения траектории и полусферы
             inter = Intersection_sphere(H, V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
-            //
-
+            // Установка флага пересечения
             flag_all = inter.flag_inter;
-
-            cos_roll = atanf(tanf(yaw * GLOBAL_PI / 180) / cosf(pitch * GLOBAL_PI / 180));
-
-            cos_roll = cosf(cos_roll);
-
-            cout << "Косинус угла крена = " << cos_roll << ";" << endl;
-
-            if ((cos_roll == 1) || (cos_roll == 0) || (cos_roll == -1))
-            {
-                R_turn = 0;
-                cout << "ВИРАЖ НЕВОЗМОЖЕН!!! НЕДОПУСТИМЫЙ УГОЛ КРЕНА!!!" << endl;
-            }
-            else
-            {
-                n_y = 1 / cos_roll;
-                R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
-                R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
-                cout << "Радиус виража = " << R_turn << " километров;" << endl;
-            }
-
+            // Нахождение радиуса виража
+            R_turn = Search_R_turn(H, V, pitch, yaw);
+            // Находим угол между векторами радиуса и траектории
             angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, inter.x, inter.y, 0);
 
             //********************************************************************************
-
+            // Если есть пересечение луча со сферой
             if (inter.flag_inter == true)
             {
+                // Создание буферных переменных
                 bf_x = inter.x;
                 bf_y = inter.y;
                 bf_z = inter.z;
+                // Нахождение точки центра окружности
                 inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, cos(angle_radius * GLOBAL_PI / 180) * (radius_sphere + R_turn));
                 turn.x = inter.x;
                 turn.y = inter.y;
                 turn.z = inter.z;
+                // Нахождение точки контакта сферы и окружности
                 inter = Contact_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw, R_turn);
                 contact.x = inter.x;
                 contact.y = inter.y;
@@ -372,9 +372,10 @@ int main(void)
                 inter.x = bf_x;
                 inter.y = bf_y;
                 inter.z = bf_z;
+                // Нахождение координат точки начала увода ЛА
                 track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
             }
-
+            // Сообщения ЛА
             cout << "Пересечение со сферой - ";
             if (flag_all == true)
             {
@@ -409,13 +410,16 @@ int main(void)
 
             //********************************************************************************
         }
-        ////////////////////////////////////////////////////////////////////////////////
-        ////////////////////////////////////////////////////////////////////////////////
         // Установка цвета фона
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         // Очистка буфера цвета и глубин
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        /////////////////////////////////////////////////////////////
+        const char* test = "testing";
+        draw_text_1(test, 0, 0, 1, true, true, 0);
+        ////////////////////////////////////////////////////////////
+        // Если есть пересечение сферы и луча
         if ((flag_all == true) && (R_turn != 0))
         {
             // Сохранение матрицы вида в стек
@@ -451,6 +455,7 @@ int main(void)
             // Возвращение матрицы из стека
             glPopMatrix();
         }
+        // Если нет пересечения луча и сферы
         else
         {
             // Сохранение матрицы вида в стек

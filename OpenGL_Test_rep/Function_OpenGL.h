@@ -2,11 +2,11 @@
 // Подключение OpenGL и библиотек для работы с ним
 #include "glew.h" 
 #include "glfw3.h"
-#include <gl/gl.h>
-#include <gl/glut.h>
-//#include "ftgl.h"
-//#include <ft2build.h>
-
+#include "gl/gl.h"
+#include "gl/glut.h"
+#include "ftgl.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
 // Подключение стандартных библиотек
 #include <iostream>
 #include <windows.h>
@@ -76,6 +76,8 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 // Блок - промежуточные математические расчеты
 //********************************************************************
 
+float Search_R_turn(float H, float V, float pitch, float yaw);
+
 float Angle_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2);
 
 float Disrance_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2);
@@ -89,3 +91,5 @@ bool Check_input_data(float A, float B, float C, float x_r, float y_r, float R);
 void Move_Camera();
 
 void Interface_low(float H, float V, float pitch, float yaw, float x_sphere, float y_sphere, float x_radius);
+
+int draw_text_1(const char* inp, double x, double y, double mash, bool cx, bool cy, double angl);

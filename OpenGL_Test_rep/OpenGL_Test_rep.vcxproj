@@ -133,7 +133,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;GLEW_STATICNDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\fff\include;C:\Users\Даниил\source\repos\OpenGL_Test_rep\Includes\GLUT;$(SolutionDir)\Includes\GLEW;C:\Users\Даниил\source\repos\OpenGL_Test_rep\Includes\FTGL;$(SolutionDir)\Includes\GLFW;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Даниил\source\repos\OpenGL_Test_rep\Includes;C:\Users\Даниил\source\repos\OpenGL_Test_rep\Includes\freetype;D:\fff\include;C:\Users\Даниил\source\repos\OpenGL_Test_rep\Includes\GLUT;$(SolutionDir)\Includes\GLEW;C:\Users\Даниил\source\repos\OpenGL_Test_rep\Includes\FTGL;$(SolutionDir)\Includes\GLFW;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
