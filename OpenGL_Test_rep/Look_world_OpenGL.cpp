@@ -42,9 +42,12 @@ void Cursors()
 ***********************************************************************************/
 void Begin_sphere(float H)
 {
+    // Сохранение текущей матрицы в стек
     glPushMatrix();
+    // Перемещение и создание сферы
     glTranslatef(0, 0, H);
     Draw_sphere_traectory(0, 0, 0.1);
+    // Возвращение матрицы из стека
     glPopMatrix();
 }
 /***********************************************************************************
@@ -53,9 +56,12 @@ void Begin_sphere(float H)
 ***********************************************************************************/
 void End_sphere(float x, float y, float z)
 {
+    // Сохранение текущей матрицы в стек
     glPushMatrix();
+    // Перемещение и создание сферы
     glTranslatef(x, y, z);
     Draw_sphere_traectory(0, 0, 0.1);
+    // Возвращение матрицы из стека
     glPopMatrix();
 }
 /***********************************************************************************
@@ -64,12 +70,12 @@ void End_sphere(float x, float y, float z)
 ***********************************************************************************/
 void Inter_sphere(float x, float y, float z)
 {
-    //cout << x << endl;
-    //cout << y << endl;
-    //cout << z << endl;
+    // Сохранение текущей матрицы в стек
     glPushMatrix();
+    // Перемещение и создание сферы
     glTranslatef(x, y, z);
     Draw_sphere_traectory(0, 0, 0.01);
+    // Возвращение матрицы из стека
     glPopMatrix();
     //glPointSize(2);
     //glBegin(GL_POINTS);
@@ -86,9 +92,12 @@ void Contact_sphere(float x, float y, float z)
     //cout << x << endl;
     //cout << y << endl;
     //cout << z << endl;
+    // Сохранение текущей матрицы в стек
     glPushMatrix();
+    // Перемещение и создание сферы
     glTranslatef(x, y, z);
     Draw_sphere_traectory(0, 0, 0.01);
+    // Возвращение матрицы из стека
     glPopMatrix();
     //glPointSize(2);
     //glBegin(GL_POINTS);

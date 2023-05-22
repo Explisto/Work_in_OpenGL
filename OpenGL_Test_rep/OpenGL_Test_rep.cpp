@@ -32,6 +32,7 @@ struct_contact contact;
  * @param yaw Угол рысканья ЛА
  * @param radius Радиус сферы
  * @param R_turn Радиус окружности виража ЛА
+ * @return Ничего
 ***********************************************************************************/
 void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float R_turn)
 {
@@ -223,10 +224,11 @@ int main(void)
         if ((buf_w != viewportWidth) || buf_h != viewportHeight)
         {
             glViewport(0, 0, viewportWidth, viewportHeight);
+            //glMatrixMode(GL_PROJECTION);
             //glLoadIdentity();
             ratio = (float)viewportWidth / (float)viewportHeight;
-            //glOrtho(-ratio, ratio, -1, 1, -1, 1);
-            glScalef(ratio, ratio, ratio);
+            glOrtho(ratio, ratio, 2, 2, 2, 80);
+            //glScalef(ratio, ratio, ratio);
             buf_w = viewportWidth;
             buf_h = viewportHeight;
         }
@@ -419,7 +421,7 @@ int main(void)
             // Сохранение матрицы вида в стек
             glPushMatrix();
             // Функция управления камерой
-            Move_camera(flag_console);
+            Move_camera();
             // Отрисовка осей
             Axe();
             // Сфера - начала траектории ЛА
@@ -454,7 +456,7 @@ int main(void)
             // Сохранение матрицы вида в стек
             glPushMatrix();
             // Функция управления камерой
-            Move_camera(flag_console);
+            Move_camera();
             // Отрисовка осей
             Axe();
             // Сфера начала траектории ЛА

@@ -1,5 +1,3 @@
-// OpenGL_Test_rep.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
 // Подключение заголовочного файла
 #include "Function_OpenGL.h"
 
@@ -12,7 +10,7 @@ float x_turn, y_turn, z_turn;
 using namespace std;
 
 /***********************************************************************************
- * @brief Функция расчета точек пересечения траектории ЛА и сферы
+ * @brief Функция расчета точек пересечения линии и сферы
  * @param H Начальная высота ЛА
  * @param V Начальная скорость ЛА
  * @param pitch Угол тангажа
@@ -20,6 +18,7 @@ using namespace std;
  * @param x_sp Координата x центра сферы
  * @param y_sp Координата y центра сферы
  * @param R_sp Радиус сферы
+ * @return Координаты точки пересечения луча и сферы
 ***********************************************************************************/
 struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float x_sp, float y_sp, float R_sp)
 {
@@ -101,37 +100,55 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 	}
 }
 
+/***********************************************************************************
+ * @brief Функция расчета точки конца траектории ЛА в случае, когда нет пересечения со сферой
+ * @param H Начальная высота ЛА
+ * @param V Начальная скорость ЛА
+ * @param pitch Угол тангажа
+ * @param yaw Угол рысканья
+ * @return Координаты конечной точки траектории ЛА
+***********************************************************************************/
 struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 {
-
+	// Объявление переменных - направляющих векторов прямой
 	float a_x, a_y, a_z;
+	// Объявление переменных - координат итоговых точек
 	float x_t, y_t, z_t;
+	// Расчитанные значения
 	float t, m, n, p;
+	// Диствнции между точками
 	float distance_1, distance_2;
+	// Вектор длины
 	float vector_long = V / 20 * 100;
-
+	
+	// Расчет направляющих косинусов прямой с определенным расстоянием
 	a_x = vector_long * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
 	a_y = -vector_long * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
 	a_z = H + vector_long * sin(pitch * GLOBAL_PI / 180);
 
+	// Расчет направляющих косинусов исходной прямой
 	m = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
 	n = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
 	p = V * sin(pitch * GLOBAL_PI / 180);
 
+	// Если прямая параллельна исходной плоскости
 	if (p == 0)
 	{
 		return { a_x, a_y, a_z, false };
 	}
 
+	// Расчитываем параметр для уравнения
 	t = -H / p;
-
+	// Находим координаты точки
 	x_t = m * t;
 	y_t = - n * t;
 	z_t = p * t + H;
 
+	// Расчет расстояния между векторами
 	distance_1 = Disrance_two_vectors(0, 0, H, a_x, a_y, a_z);
 	distance_2 = Disrance_two_vectors(0, 0, H, x_t, y_t, z_t);
 
+	// Выбор оптимального расстояния
 	if (distance_1 < distance_2)
 	{
 		return { a_x, a_y, a_z, false };
@@ -141,42 +158,69 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 		return { x_t, y_t, z_t, false };
 	}
 }
-
+/***********************************************************************************
+ * @brief Функция расчета начала увода ЛА
+ * @param turn_x Координата x - центра окружности ухода ЛА
+ * @param turn_y Координата y - центра окружности ухода ЛА
+ * @param turn_z Координата z - центра окружности ухода ЛА
+ * @param H Начальная высота ЛА
+ * @param V Начальная скорость ЛА
+ * @param pitch Угол тангажа
+ * @param yaw Угол рысканья
+ * @return Координаты точки начала ухода ЛА
+***********************************************************************************/
 struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw)
 {
+	// Объявление переменных - координат итоговых точек
 	float x_1, y_1, z_1;
-
+	// Объявление переменных - направляющих векторов прямой
 	float m_track, n_track, p_track;
-
+	// Вычисленный параметр
 	float t_turn;
 
+	// Расчет направляющих косинусов прямой
 	m_track = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
 	n_track = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
 	p_track = V * sin(pitch * GLOBAL_PI / 180);
 
+	// Расчет параметра по формуле нахождения точки, через которую проходит перпендикуляр
 	t_turn = -(turn_x * m_track + turn_y * n_track + turn_z * p_track - p_track * H) / (pow(m_track,2) + pow(n_track, 2) + pow(p_track, 2));
-
+	// Находим координаты точки
 	x_1 = m_track * t_turn;
 	y_1 = -n_track * t_turn;
 	z_1 = p_track * t_turn + H;
 
 	return { x_1, y_1, z_1 };
 }
-
+/***********************************************************************************
+ * @brief Функция расчета точки касания траектории ЛА
+ * @param turn_x Координата x - центра окружности ухода ЛА
+ * @param turn_y Координата y - центра окружности ухода ЛА
+ * @param turn_z Координата z - центра окружности ухода ЛА
+ * @param H Начальная высота ЛА
+ * @param V Начальная скорость ЛА
+ * @param pitch Угол тангажа
+ * @param yaw Угол рысканья
+ * @param R_turn Радиус окружности увода ЛА
+ * @return Координаты касания траектории ЛА
+***********************************************************************************/
 struct_inter Contact_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw, float R_turn)
 {
+	// Объявление переменных - координат итоговых точек
 	float x_1, y_1, z_1;
-
+	// Объявление переменных - направляющих векторов прямой
 	float m_contact, n_contact, p_contact;
-
+	// Вычисленный параметр
 	float t_contact;
 
+	// Расчет направляющих косинусов прямой
 	m_contact = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
 	n_contact = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
 	p_contact = V * sin(pitch * GLOBAL_PI / 180);
 
+	// Расчет параметра прямой
 	t_contact = Disrance_two_vectors(0, 0, H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), turn_x, turn_y, turn_z);
-
+	// Находим координаты точки
 	x_1 = m_contact * (t_contact + R_turn);
 	y_1 = -n_contact * (t_contact + R_turn);
 	z_1 = p_contact * (t_contact + R_turn) + H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180);
@@ -216,28 +260,32 @@ float Disrance_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2
 	return distance;
 }
 /***********************************************************************************
- * @brief Функция находит расстояние между двумя точками
+ * @brief Функция проверяет, не выходит ли полусфера за границы разрешенной области
  * @param x_1, y_1, z_1 - координаты первой точки
- * @param x_2, y_2, z_2 - координаты второй точки
- * @return Расстояние между двумя точками
+ * @return Если можно изменять состояние полусферы, возвращает true, иначе - false
 ***********************************************************************************/
 bool Check_input_data(float x_r, float y_r, float R)
 {
+	// Объявление переменной - расстояние до прямой
 	float distance;
-
+	// Коэффициенты прямой
 	float A = 0;
 	float B = 0;
 	float C = 0;
 
-	//1 случай
+	//1 случай - прямая x = 0
+	// Установка коэффициентов прямой
 	A = 1;
+	// Расчет расстояния
 	distance = abs((A * x_r + B * y_r + C) / (sqrt(powf(A, 2) + powf(B, 2))));
+	// Проверка с радиусом полусферы
 	if (distance < R)
 	{
 		return false;
 	}
 
-	// 2 случай
+	// 2 случай - прямая  y = 0
+	// Аналогично 1 случаю
 	A = 0;
 	B = 1;
 	distance = abs((A * x_r + B * y_r + C) / (sqrt(powf(A, 2) + powf(B, 2))));
@@ -245,7 +293,8 @@ bool Check_input_data(float x_r, float y_r, float R)
 	{
 		return false;
 	}
-	// 3 случай
+	// 3 случай - прямая  x = 11
+	// Аналогично 1 случаю
 	A = 1;
 	B = 0;
 	C = -11;
@@ -254,7 +303,8 @@ bool Check_input_data(float x_r, float y_r, float R)
 	{
 		return false;
 	}
-	// 4 случай
+	// 4 случай - прямая  y = 11
+	// Аналогично 1 случаю
 	A = 0;
 	B = 1;
 	C = -11;
@@ -263,5 +313,6 @@ bool Check_input_data(float x_r, float y_r, float R)
 	{
 		return false;
 	}
+	// Если все проверки пройдены, возвращаем true
 	return true;
 }
