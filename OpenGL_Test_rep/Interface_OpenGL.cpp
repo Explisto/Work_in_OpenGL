@@ -30,10 +30,10 @@ int draw_text_1(const char* inp, double x, double y, double mash, bool cx, bool 
     // Create a pixmap font from a TrueType file.
 
     //FTGLPixmapFont font("C:/Users/Даниил/source/repos/OpenGL_Test_rep/Libs/FONTS/comic.ttf");
-    FTGLPixmapFont font("../Libs/FONTS/times.ttf");
+    //FTGLPixmapFont font("../Libs/FONTS/times.ttf");
 
     // If something went wrong, bail out.
-    if (font.Error())
+    //if (font.Error())
     {
         return -1;
         cout << "ERROR" << endl;
