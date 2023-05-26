@@ -5,8 +5,15 @@
 #include "gl/gl.h"
 #include "gl/glut.h"
 #include "ftgl.h"
-#include <ft2build.h>
-#include FT_FREETYPE_H
+//#include <ft2build.h>
+//#include FT_FREETYPE_H
+
+//
+//#include <FTFont.h>
+//#include <FTGLPolygonFont.h>
+//#include <FTPoint.h>
+//
+
 // Подключение стандартных библиотек
 #include <iostream>
 #include <windows.h>
@@ -92,4 +99,4 @@ void Move_Camera();
 
 void Interface_low(float H, float V, float pitch, float yaw, float x_sphere, float y_sphere, float x_radius);
 
-int draw_text_1(const char* inp, double x, double y, double mash, bool cx, bool cy, double angl);
+int draw_text_1();

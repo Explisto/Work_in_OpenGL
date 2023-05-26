@@ -184,8 +184,9 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 	p_track = V * sin(pitch * GLOBAL_PI / 180);
 
 	// –асчет параметра по формуле нахождени€ точки, через которую проходит перпендикул€р
-	t_turn = -(turn_x * m_track + turn_y * n_track + turn_z * p_track - p_track * H) / (pow(m_track,2) + pow(n_track, 2) + pow(p_track, 2));
+	t_turn = (turn_x * m_track + turn_y * n_track + turn_z * p_track - p_track * H) / (pow(m_track, 2) + pow(n_track, 2) + pow(p_track, 2));
 	// Ќаходим координаты точки
+
 	x_1 = m_track * t_turn;
 	y_1 = -n_track * t_turn;
 	z_1 = p_track * t_turn + H;

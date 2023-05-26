@@ -151,11 +151,8 @@ int main(void)
     bool flag_cross = false; // Метка пересечения траектории ЛА и полусферы
 
     float R_turn; // Значение радиуса виража
-    float n_y; // Значение продольной перегрузки
 
     float bf_x, bf_y, bf_z; // Буферные переменные
-
-    float cos_roll; // Значение косинуса угла крена
 
     bool flag_all; // Метка захода в цикл пересчета значений
 
@@ -216,10 +213,11 @@ int main(void)
     ///****************************************************************
     // Математические расчеты пересечения заданной траектории и сферы
     ///************************************************************
-    
+
     // Основной цикл программы, пока не закрыто окно glfw
     while (!glfwWindowShouldClose(window))
     {
+
         // Отслеживание изменения размера окна
         glfwGetFramebufferSize(window, &viewportWidth, &viewportHeight);
 
@@ -236,7 +234,7 @@ int main(void)
             buf_w = viewportWidth;
             buf_h = viewportHeight;
         }
-
+        glViewport(0, 0, viewportWidth, viewportHeight);
         // Окончание работы программы при помощи нажатия клавиши Escape
         if (glfwGetKey(window, GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -417,8 +415,9 @@ int main(void)
 
         /////////////////////////////////////////////////////////////
         const char* test = "testing";
-        draw_text_1(test, 0, 0, 1, true, true, 0);
+        draw_text_1();
         ////////////////////////////////////////////////////////////
+
         // Если есть пересечение сферы и луча
         if ((flag_all == true) && (R_turn != 0))
         {
@@ -452,6 +451,22 @@ int main(void)
             {
                 End_sphere(inter.x, inter.y, inter.z);
             }
+
+            //
+            glColor3f(1, 0, 0);
+            glListBase(9000);
+            // glViewport(0, 0, 200, 200);
+            glRasterPos2i(20, 20);
+            glCallLists(3, GL_UNSIGNED_BYTE, "fvvvvvvvvvvvfffffffffffffffffffffffffffffffffvvvvvvvvvvvvvvvvff");
+            //
+            glPointSize(20);
+            glBegin(GL_POINTS);
+            glColor3d(1, 0, 0);
+            glVertex3d(track.x, track.y, track.z); // первая точка
+            glColor3d(0, 1, 0.5);
+            glVertex3d(turn.x, turn.y, turn.z); // первая точка
+            glEnd();
+            //
             // Возвращение матрицы из стека
             glPopMatrix();
         }
