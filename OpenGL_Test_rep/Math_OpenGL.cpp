@@ -59,12 +59,14 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 		// Одна точка пересечения
 		if (D == 0)
 		{
+			cout << "ПЕРЕСЕЧЕНИЕ С ПОЛУСФЕРОЙ В ОДНОЙ ТОЧКЕ" << endl;
 			t_1 = (-B) / (2 * A);
 			flag_loot = true;
 		}
 		// Две точки пересечения
 		else
 		{
+			cout << "ПЕРЕСЕЧЕНИЕ С ПОЛУСФЕРОЙ В ДВУХ ТОЧКАХ" << endl;
 			t_1 = (-B + sqrt(D)) / (2 * A);
 			t_2 = (-B - sqrt(D)) / (2 * A);
 			flag_loot = false;
@@ -177,19 +179,32 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 	float m_track, n_track, p_track;
 	// Вычисленный параметр
 	float t_turn;
+	// Точки прямой
+	float a, b, c;
+	// Изменение знака
+	turn_y = -turn_y;
 
 	// Расчет направляющих косинусов прямой
 	m_track = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
 	n_track = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
 	p_track = V * sin(pitch * GLOBAL_PI / 180);
+	// Точки прямой
+	a = 0;
+	b = 0;
+	c = H;
 
+	// Проверка на деление на ноль
+	if ((pow(m_track, 2) + pow(n_track, 2) + pow(p_track, 2)) == 0.0)
+	{
+		return { 0, 0, 0 };
+	}
 	// Расчет параметра по формуле нахождения точки, через которую проходит перпендикуляр
-	t_turn = (turn_x * m_track + turn_y * n_track + turn_z * p_track - p_track * H) / (pow(m_track, 2) + pow(n_track, 2) + pow(p_track, 2));
-	// Находим координаты точки
+	t_turn = -(m_track * (a - turn_x) + n_track * (b - turn_y) + p_track * (c - turn_z)) / (pow(m_track, 2) + pow(n_track, 2) + pow(p_track, 2));
 
-	x_1 = m_track * t_turn;
-	y_1 = -n_track * t_turn;
-	z_1 = p_track * t_turn + H;
+	// Находим координаты точки
+	x_1 = m_track * t_turn + a;
+	y_1 = -n_track * t_turn + b;
+	z_1 = p_track * t_turn + c;
 
 	return { x_1, y_1, z_1 };
 }
@@ -276,11 +291,18 @@ float Search_R_turn(float H, float V, float pitch, float yaw)
 ***********************************************************************************/
 float Angle_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, float z_2)
 {
+	// Значение угла
 	float cos_angle;
+
+	if (((sqrt(pow(x_1, 2) + pow(y_1, 2) + pow(z_1, 2))) * sqrt(pow(x_2, 2) + pow(y_2, 2) + pow(z_2, 2))) == 0)
+	{
+		return 0;
+	}
 
 	// Нахождение угла между двумя векторами
 	cos_angle = (x_1 * x_2 + y_1 * y_2 + z_1 * z_2) / ((sqrt(pow(x_1, 2) + pow(y_1, 2) + pow(z_1, 2))) * sqrt(pow(x_2, 2) + pow(y_2, 2) + pow(z_2, 2)));
 
+	// Возвращение угла
 	return acos(cos_angle) * 180 / GLOBAL_PI;
 }
 

@@ -89,9 +89,6 @@ void Inter_sphere(float x, float y, float z)
 ***********************************************************************************/
 void Contact_sphere(float x, float y, float z)
 {
-    //cout << x << endl;
-    //cout << y << endl;
-    //cout << z << endl;
     // Сохранение текущей матрицы в стек
     glPushMatrix();
     // Перемещение и создание сферы

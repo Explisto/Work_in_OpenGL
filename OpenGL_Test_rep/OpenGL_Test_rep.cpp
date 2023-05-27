@@ -34,9 +34,6 @@ struct_contact contact;
 ***********************************************************************************/
 void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float R_turn)
 {
-    // Массив точек: первая - на расстоянии радиуса виража от начальной точки, вторая - центр окружности виража ЛА
-    float vert_1[] = { 0, 0, H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), inter.x, inter.y, inter.z + R_turn / sin((90 - pitch) * GLOBAL_PI / 180) };
-
     // Точки для построения окружности
     float x_rotate, y_rotate, z_rotate = 0;
 
@@ -44,49 +41,47 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
     float alfa = 0;
 
     // Счетчик окружности для отрисовки
-    float circle_def = 50;
+    float circle_def = 100;
 
     // Построение траектории ухода ЛА
+    float count_circle;
+    
+    count_circle = Angle_two_vectors(turn.x, turn.y, 0, turn.x - track.x, turn.y - track.y, turn.z - track.z);
+
+    count_circle = int(count_circle);
+    
     glColor3f(0.1f, 1.0f, 0.2f);
 
     // Сохранение текущей матрицы в стек
     glPushMatrix();
-
-    // Перемещение в точку начала построения окружности
-    glTranslatef(turn.x, turn.y, turn.z);
+    // Перемещение
+    glTranslated(turn.x, turn.y, turn.z);
     // Поворот окружности относительно оси oX
-    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+    glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
     // Поворот окружности на угол рысканья
-    glRotatef(-(90 - yaw), 0.0f, 1.0f, 0.0f);
+    glRotatef(-yaw, 0.0f, 1.0f, 0.0f);
+    // glRotatef(-(90 - yaw), 1.0f, 0.0f, 0.0f);
     // Поворот окружности на угол танагажа
-    glRotatef(-pitch * sin(pitch * GLOBAL_PI / 180) + pitch * cos(pitch * GLOBAL_PI / 180), 0.0f, 0.0f, 1.0f);
-    glRotatef(90, 0.0f, 0.0f, 1.0f);
+    // glRotatef(pitch * sin(pitch * GLOBAL_PI / 180) + pitch * cos(pitch * GLOBAL_PI / 180), 0.0f, 0.0f, 1.0f);
+    // glRotatef(90, 0.0f, 0.0f, 1.0f);
     // Начало рисования окружности - траектории ухода ЛА
     glBegin(GL_LINE_STRIP);
     // Установка цвета траектории
     glColor3f(1.0, 0.0, 0.0);
-
     // Цикл - нахождение точек окружности
-    for (int count_circle = 0; count_circle < int(circle_def); count_circle++)
+    for (count_circle; count_circle < int(circle_def); count_circle++)
     {
-        if (count_circle > 19)
-        {
-            // Нахождение угла поворота точки
-            alfa = -count_circle / 50.0f * GLOBAL_PI;
-            // Нахождение координат точки окружности
-            x_rotate = cos(alfa) * R_turn;
-            y_rotate = sin(alfa) * R_turn;
-            // Отображение точки
-            glVertex3f(x_rotate, y_rotate, 0);
-        }
-        else
-        {
-            // Нахождение координат точки окружности
-            x_rotate = cos(alfa) * R_turn;
-            y_rotate = sin(alfa) * R_turn;
-        }
+        // Нахождение угла поворота точки
+        alfa = count_circle / 180.0f * GLOBAL_PI;
+        // Нахождение координат точки окружности
+        x_rotate = cos(alfa) * R_turn;
+        y_rotate = sin(alfa) * R_turn;
+        // Отображение точки
+        glVertex3f(0, y_rotate, x_rotate);
     }
+    glPopMatrix();
     glEnd();
+    
     // Цикл - построение сфер на траектории
     for (int count_sphere = 0; count_sphere < int(circle_def); count_sphere++)
     {
@@ -107,6 +102,7 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
     }
     // Возвращение матрицы из стека
     glPopMatrix();
+    
 
 
 }
@@ -362,6 +358,10 @@ int main(void)
                 turn.x = inter.x;
                 turn.y = inter.y;
                 turn.z = inter.z;
+                turn.flag_turn = inter.flag_inter;
+                cout << turn.flag_turn << "AKFU" << endl;
+                // Нахождение координат точки начала увода ЛА
+                track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
                 // Нахождение точки контакта сферы и окружности
                 inter = Contact_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw, R_turn);
                 contact.x = inter.x;
@@ -370,8 +370,6 @@ int main(void)
                 inter.x = bf_x;
                 inter.y = bf_y;
                 inter.z = bf_z;
-                // Нахождение координат точки начала увода ЛА
-                track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
             }
             // Сообщения ЛА
             cout << "Пересечение со сферой - ";
@@ -452,12 +450,12 @@ int main(void)
                 End_sphere(inter.x, inter.y, inter.z);
             }
 
-            //
+            /////////////////////////////////////////////
             glColor3f(1, 0, 0);
             glListBase(9000);
             // glViewport(0, 0, 200, 200);
             glRasterPos2i(20, 20);
-            glCallLists(3, GL_UNSIGNED_BYTE, "fvvvvvvvvvvvfffffffffffffffffffffffffffffffffvvvvvvvvvvvvvvvvff");
+            glCallLists(3, GL_UNSIGNED_BYTE, "fvvvvvvvvvvvffffffffffffffffffffffffffffffffffffffffffffffffffvvvvvvvvvvvvvvvvff");
             //
             glPointSize(20);
             glBegin(GL_POINTS);
@@ -466,7 +464,7 @@ int main(void)
             glColor3d(0, 1, 0.5);
             glVertex3d(turn.x, turn.y, turn.z); // первая точка
             glEnd();
-            //
+            ////////////////////////////////////////////////////////////
             // Возвращение матрицы из стека
             glPopMatrix();
         }
