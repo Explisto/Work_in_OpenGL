@@ -40,67 +40,15 @@ void Cursors()
  * @brief Создание начальной точки движения ЛА
  * @return Ничего
 ***********************************************************************************/
-void Begin_sphere(float H)
-{
-    // Сохранение текущей матрицы в стек
-    glPushMatrix();
-    // Перемещение и создание сферы
-    glTranslatef(0, 0, H);
-    Draw_sphere_traectory(0, 0, 0.1);
-    // Возвращение матрицы из стека
-    glPopMatrix();
-}
-/***********************************************************************************
- * @brief Создание конечной точки движения ЛА в случае отстутствия точки касания с полусферой
- * @return Ничего
-***********************************************************************************/
-void End_sphere(float x, float y, float z)
+void Point_sphere(float x, float y, float z, int code_sphere)
 {
     // Сохранение текущей матрицы в стек
     glPushMatrix();
     // Перемещение и создание сферы
     glTranslatef(x, y, z);
-    Draw_sphere_traectory(0, 0, 0.1);
+    Draw_sphere_traectory(0.0, 0.0, 0.2, code_sphere);
     // Возвращение матрицы из стека
     glPopMatrix();
-}
-/***********************************************************************************
- * @brief Создание сферы пересечения траектории ЛА и полусферы
- * @return Ничего
-***********************************************************************************/
-void Inter_sphere(float x, float y, float z)
-{
-    // Сохранение текущей матрицы в стек
-    glPushMatrix();
-    // Перемещение и создание сферы
-    glTranslatef(x, y, z);
-    Draw_sphere_traectory(0, 0, 0.01);
-    // Возвращение матрицы из стека
-    glPopMatrix();
-    //glPointSize(2);
-    //glBegin(GL_POINTS);
-    //glColor3d(0, 1, 0);
-    //glVertex3d(x, y, z); // первая точка
-    //glEnd();
-}
-/***********************************************************************************
- * @brief Создание сферы - точки касания окружности и полусферы
- * @return Ничего
-***********************************************************************************/
-void Contact_sphere(float x, float y, float z)
-{
-    // Сохранение текущей матрицы в стек
-    glPushMatrix();
-    // Перемещение и создание сферы
-    glTranslatef(x, y, z);
-    Draw_sphere_traectory(0, 0, 0.01);
-    // Возвращение матрицы из стека
-    glPopMatrix();
-    //glPointSize(2);
-    //glBegin(GL_POINTS);
-    //glColor3d(0, 1, 0);
-    //glVertex3d(x, y, z); // первая точка
-    //glEnd();
 }
 /***********************************************************************************
  * @brief Создание полусферы и сетки для нее
@@ -192,7 +140,6 @@ void Draw_sphere(float x_sp, float y_sp, float r)
                 y_sp + r * cos(a + da) * sin(b),
                 r * sin(a + da));
             glEnd();
-
         }
     }
 }
@@ -204,22 +151,60 @@ void Draw_sphere(float x_sp, float y_sp, float r)
  * @param r Радиус сферы
  * @return Ничего
 ***********************************************************************************/
-void Draw_sphere_traectory(float x_sp, float y_sp, float r)
+void Draw_sphere_traectory(float x_sp, float y_sp, float r, int code_sphere)
 {
-
     float di = 0.02;
     float dj = 0.04;
     float db = di * 2 * GLOBAL_PI;
     float da = dj * GLOBAL_PI;
     float p_1 = 0.0, p_2 = 0.0, p_3 = 0.0, p_4 = 0.0;
-    if ((r > 0.09) && (r < 0.11))
+
+    // Сфера - начало траектории ЛА
+    if (code_sphere == 0)
     {
-        glColor3f(1.0f, 0.0f, 0.0f);
+        glColor3f(1.0, 0.0, 0.0);
     }
-    else
+    // Сфера - конец траектории ЛА
+    if (code_sphere == 1)
     {
-        glColor3f(0.5f, 0.5f, 0.8f);
+        glColor3f(1.0, 0.0, 1.0);
     }
+    // Сфера - пересечение с полусферой - 1 точка
+    if (code_sphere == 2)
+    {
+        glColor3f(0.0, 1.0, 0.0);
+        r = 0.05;
+    }
+    // Сфера - пересечение с полусферой - 2 точка (неактивно)
+    if (code_sphere == 3)
+    {
+        glColor3f(1.0, 0.0, 1.0);
+    }
+    // Сфера - центр полусферы
+    if (code_sphere == 4)
+    {
+        glColor3f(1.0, 0.0, 1.0);
+        r = 0.1;
+    }
+    // Сфера - наччало ухода ЛА
+    if (code_sphere == 5)
+    {
+        r = 0.1;
+        glColor3f(1.0, 0.5, 0.5);
+    }
+    // Сфера - общая точка полусферы и окружности
+    if (code_sphere == 6)
+    {
+        r = 0.1;
+        glColor3f(0.3, 0.2, 0.8);
+    }
+    // Сфера - конечная точка траектории ЛА на окружности
+    if (code_sphere == 7)
+    {
+        r = 0.1;
+        glColor3f(0.5, 0.5, 0.5);
+    }
+
     // Горизонтальная плоскость
     for (float i = 0.0; i < 1.0; i += di)
     {

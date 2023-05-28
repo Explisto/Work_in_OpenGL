@@ -41,7 +41,7 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
     float alfa = 0;
 
     // Счетчик окружности для отрисовки
-    float circle_def = 100;
+    float circle_def = 150;
 
     // Построение траектории ухода ЛА
     float count_circle;
@@ -79,32 +79,12 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
         // Отображение точки
         glVertex3f(0, y_rotate, x_rotate);
     }
-    glPopMatrix();
+    // Закончили отрисовку
     glEnd();
-    
-    // Цикл - построение сфер на траектории
-    for (int count_sphere = 0; count_sphere < int(circle_def); count_sphere++)
-    {
-        // Нахождение угла поворота точки
-        alfa = -count_sphere / 50.0f * GLOBAL_PI;
-        // Нахождение координат точки окружности
-        x_rotate = cos(alfa) * R_turn;
-        y_rotate = sin(alfa) * R_turn;
-        // Построение сфер на траектории ЛА
-        if ((count_sphere >= 20) && (count_sphere % 10 == 0))
-        {
-            Draw_sphere_traectory(x_rotate, y_rotate, 0.08); // Вызов функции построения сферы
-        }
-        if (count_sphere == (int(circle_def) - 1))
-        {
-            Draw_sphere_traectory(x_rotate, y_rotate, 0.1); // Вызов функции построения сферы
-        }
-    }
-    // Возвращение матрицы из стека
+    // Конечная точка траектории ЛА
+    Point_sphere(0, y_rotate, x_rotate, 7);
+    // Возвращение матрицы вида из стека
     glPopMatrix();
-    
-
-
 }
 
 /***********************************************************************************
@@ -344,7 +324,7 @@ int main(void)
             R_turn = Search_R_turn(H, V, pitch, yaw);
             // Находим угол между векторами радиуса и траектории
             angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, inter.x, inter.y, 0);
-
+            cout << "ANGLE = "<< angle_radius << endl;
             //********************************************************************************
             // Если есть пересечение луча со сферой
             if (inter.flag_inter == true)
@@ -363,9 +343,10 @@ int main(void)
                 // Нахождение координат точки начала увода ЛА
                 track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
                 // Нахождение точки контакта сферы и окружности
-                inter = Contact_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw, R_turn);
+                angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, turn.x, turn.y, 0);
+                inter = Contact_aircraft(turn.x, turn.y, turn.z, x_sphere, -y_sphere, 0, pitch, yaw, R_turn, radius_sphere);
                 contact.x = inter.x;
-                contact.y = inter.y;
+                contact.y = inter.y; 
                 contact.z = inter.z;
                 inter.x = bf_x;
                 inter.y = bf_y;
@@ -426,31 +407,45 @@ int main(void)
             // Отрисовка осей
             Axe();
             // Сфера - начала траектории ЛА
-            Begin_sphere(H);
+            Point_sphere(0, 0, H, 0);
             // Отрисовка направляющих стрелок на осях
             Cursors();
             // Сфера - пересечение траектории и сферы
-            Inter_sphere(inter.x, inter.y, inter.z);
-            // Сфера - пересечение траектории и сферы
-            Contact_sphere(contact.x, contact.y, contact.z);
+            // Point_sphere(contact.x, contact.y, contact.z, 2);
             // Рисование полусферы
             Draw_sphere(x_sphere, -y_sphere, radius_sphere);
             // Отрисовка плоскости
             Show_plane();
+            // Точка пересечения со сферой
+            Point_sphere(bf_x, bf_y, bf_z, 2);
+            // Нахождение координат конечной точки движения ЛА
+            inter = Not_intersection(pitch, yaw, H, V);
+            // Построение конечной точки ЛА
+            Point_sphere(inter.x, inter.y, inter.z, 1);
+            // Построение конечной точки ЛА
+            Point_sphere(track.x, track.y, track.z, 5);
+            // Построение центра полусферы
+            Point_sphere(x_sphere, -y_sphere, 0, 4);
             // Отображение траектории ЛА
             Aircraft_traectory(H, inter.x, inter.y, inter.z);
+            // Включение отрисовки
+            glEnable(GL_DEPTH_TEST);
+            // Построение конечной точки ЛА
+            Point_sphere(track.x, track.y, track.z, 5);
+            //glDisable(GL_DEPTH_TEST);
             // Условие, если пересечение траектории со сферой происходит за основной плоскостью
-            if (inter.z >= 0)
+            if (bf_z >= 0)
             {
                 // Отрисовка полуокружности ухода ЛА
                 Aircraft_turn(H, V, pitch, yaw, radius_sphere, R_turn);
             }
             else
             {
-                End_sphere(inter.x, inter.y, inter.z);
+                Point_sphere(inter.x, inter.y, inter.z, 3);
             }
 
             /////////////////////////////////////////////
+            
             glColor3f(1, 0, 0);
             glListBase(9000);
             // glViewport(0, 0, 200, 200);
@@ -461,9 +456,19 @@ int main(void)
             glBegin(GL_POINTS);
             glColor3d(1, 0, 0);
             glVertex3d(track.x, track.y, track.z); // первая точка
+            glVertex3d(contact.x, contact.y, contact.z); // первая точка
             glColor3d(0, 1, 0.5);
             glVertex3d(turn.x, turn.y, turn.z); // первая точка
             glEnd();
+
+            glBegin(GL_LINES);
+            glColor3d(0, 1, 0.5);
+            //glVertex3d(track.x, track.y, track.z); // первая точка
+            //glVertex3d(contact.x, contact.y, contact.z); // первая точка
+            glVertex3d(0, 0, H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180)); // первая точка
+            glVertex3d(turn.x, turn.y, turn.z); // первая точка
+            glEnd();
+            
             ////////////////////////////////////////////////////////////
             // Возвращение матрицы из стека
             glPopMatrix();
@@ -478,7 +483,9 @@ int main(void)
             // Отрисовка осей
             Axe();
             // Сфера начала траектории ЛА
-            Begin_sphere(H);
+            Point_sphere(0, 0, H, 0);
+            // Построение центра полусферы
+            Point_sphere(x_sphere, -y_sphere, 0, 4);
             // Отрисовка направляющих стрелок на осях
             Cursors();
             // Рисование полусферы
@@ -487,10 +494,10 @@ int main(void)
             Show_plane();
             // Нахождение координат конечной точки движения ЛА
             inter = Not_intersection(pitch, yaw, H, V);
+            // Построение конечной точки ЛА
+            Point_sphere(inter.x, inter.y, inter.z, 1);
             // Построение траектории ЛА
             Aircraft_traectory(H, inter.x, inter.y, inter.z);
-            // Построение конечной точки ЛА
-            End_sphere(inter.x, inter.y, inter.z);
             // Возвращение матрицы из стека
             glPopMatrix();
         }

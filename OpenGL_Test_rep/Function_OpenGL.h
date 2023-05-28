@@ -47,7 +47,7 @@ void Cursors();
 
 void Draw_sphere(float x_sp, float y_sp, float r);
 
-void Draw_sphere_traectory(float x_sp, float y_sp, float r);
+void Draw_sphere_traectory(float x_sp, float y_sp, float r, int code_sphere);
 
 void Show_plane();
 
@@ -57,13 +57,7 @@ void Aircraft_traectory(float H, float x_end, float y_end, float z_end);
 
 void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float R_turn);
 
-void Begin_sphere(float H);
-
-void End_sphere(float x, float y, float z);
-
-void Inter_sphere(float x, float y, float z);
-
-void Contact_sphere(float x, float y, float z);
+void Point_sphere(float x, float y, float z, int code_sphere);
 
 //********************************************************************
 // Блок - основные математические расчеты
@@ -75,7 +69,7 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V);
 
 struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw);
 
-struct_inter Contact_aircraft(float inter_x, float inter_y, float inter_z, float H, float V, float pitch, float yaw, float R_turn);
+struct_inter Contact_aircraft(float turn_x, float turn_y, float turn_z, float x_radius, float y_radius, float z_radius, float pitch, float yaw, float R_turn, float radius_sphere);
 
 struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw);
 

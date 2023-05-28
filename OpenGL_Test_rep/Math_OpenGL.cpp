@@ -220,26 +220,24 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
  * @param R_turn Радиус окружности увода ЛА
  * @return Координаты касания траектории ЛА
 ***********************************************************************************/
-struct_inter Contact_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw, float R_turn)
+struct_inter Contact_aircraft(float turn_x, float turn_y, float turn_z, float x_radius, float y_radius, float z_radius, float pitch, float yaw, float R_turn, float radius_sphere)
 {
 	// Объявление переменных - координат итоговых точек
 	float x_1, y_1, z_1;
-	// Объявление переменных - направляющих векторов прямой
-	float m_contact, n_contact, p_contact;
-	// Вычисленный параметр
-	float t_contact;
+	// Коэффициент пропорциональности отрезка
+	float coeff_p = R_turn / radius_sphere;
 
-	// Расчет направляющих косинусов прямой
-	m_contact = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
-	n_contact = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
-	p_contact = V * sin(pitch * GLOBAL_PI / 180);
+	//x_1 = (turn_x + coeff_p * x_radius) / (1 + coeff_p);
+	//y_1 = (turn_y + coeff_p * y_radius) / (1 + coeff_p);
+	//z_1 = (turn_z + coeff_p * z_radius) / (1 + coeff_p);
 
-	// Расчет параметра прямой
-	t_contact = Disrance_two_vectors(0, 0, H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), turn_x, turn_y, turn_z);
-	// Находим координаты точки
-	x_1 = m_contact * (t_contact + R_turn);
-	y_1 = -n_contact * (t_contact + R_turn);
-	z_1 = p_contact * (t_contact + R_turn) + H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180);
+	//x_1 = (turn_x * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180) + coeff_p * x_radius) / (1 + coeff_p);
+	//y_1 = (turn_y * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180) + coeff_p * y_radius) / (1 + coeff_p);
+	//z_1 = (turn_z + coeff_p * z_radius) / (1 + coeff_p);
+
+	x_1 = (turn_x + coeff_p * x_radius) / (1 + coeff_p);
+	y_1 = (turn_y + coeff_p * y_radius) / (1 + coeff_p);
+	z_1 = (turn_z + coeff_p * z_radius) / (1 + coeff_p);
 
 	return { x_1, y_1, z_1 };
 }
