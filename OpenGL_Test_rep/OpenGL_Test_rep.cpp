@@ -60,11 +60,7 @@ void Aircraft_turn(float H, float V, float pitch, float yaw, float radius, float
     glRotatef(-90.0f, 1.0f, 0.0f, 0.0f);
     // Поворот окружности на угол рысканья
     glRotatef(-yaw, 0.0f, 1.0f, 0.0f);
-    // glRotatef(-(90 - yaw), 1.0f, 0.0f, 0.0f);
-    // Поворот окружности на угол танагажа
-    // glRotatef(pitch * sin(pitch * GLOBAL_PI / 180) + pitch * cos(pitch * GLOBAL_PI / 180), 0.0f, 0.0f, 1.0f);
-    // glRotatef(90, 0.0f, 0.0f, 1.0f);
-    // Начало рисования окружности - траектории ухода ЛА
+    // Отрисовка окружности
     glBegin(GL_LINE_STRIP);
     // Установка цвета траектории
     glColor3f(1.0, 0.0, 0.0);
@@ -96,7 +92,6 @@ int main(void)
     // Подключение вывода кириллицы в консоль
     setlocale(LC_ALL, "Russian");
     //***************************************************************************************
-
     // Входные (начальные параметры)
     float H_input = 5000.0; // Начальная высота ЛА
     float V_input = 500.0; // Скорость ЛА
@@ -193,7 +188,7 @@ int main(void)
     // Основной цикл программы, пока не закрыто окно glfw
     while (!glfwWindowShouldClose(window))
     {
-
+        // pitch = pitch - 1;
         // Отслеживание изменения размера окна
         glfwGetFramebufferSize(window, &viewportWidth, &viewportHeight);
 
@@ -315,7 +310,6 @@ int main(void)
             x_sphere = X_input / coefficient_scale_big;
             y_sphere = Y_input / coefficient_scale_big;
             radius_sphere = Radius_input / coefficient_scale_big;
-
             // Нахождение точек пересечения траектории и полусферы
             inter = Intersection_sphere(H, V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
             // Установка флага пересечения
@@ -334,19 +328,18 @@ int main(void)
                 bf_y = inter.y;
                 bf_z = inter.z;
                 // Нахождение точки центра окружности
-                inter = Intersection_sphere(H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, cos(angle_radius * GLOBAL_PI / 180) * (radius_sphere + R_turn));
+                inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, cos(angle_radius * GLOBAL_PI / 180) * (radius_sphere + R_turn));
                 turn.x = inter.x;
                 turn.y = inter.y;
                 turn.z = inter.z;
                 turn.flag_turn = inter.flag_inter;
-                cout << turn.flag_turn << "AKFU" << endl;
                 // Нахождение координат точки начала увода ЛА
                 track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
                 // Нахождение точки контакта сферы и окружности
                 angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, turn.x, turn.y, 0);
                 inter = Contact_aircraft(turn.x, turn.y, turn.z, x_sphere, -y_sphere, 0, pitch, yaw, R_turn, radius_sphere);
                 contact.x = inter.x;
-                contact.y = inter.y; 
+                contact.y = inter.y;
                 contact.z = inter.z;
                 inter.x = bf_x;
                 inter.y = bf_y;
@@ -357,6 +350,8 @@ int main(void)
             if (flag_all == true)
             {
                 cout << "Да;" << endl;
+                cout << "Pitch = " << pitch << endl;
+                cout << "Yaw = " << yaw << endl;
                 cout << "===================================================" << endl;
                 cout << "Координаты точки пересечения траектории ЛА и сферы:" << endl;
                 cout << "x_inter = " << inter.x << ";" << endl;
@@ -378,6 +373,8 @@ int main(void)
                 cout << "y_track = " << track.y << ";" << endl;
                 cout << "z_track = " << track.z << ";" << endl;
                 cout << "===================================================" << endl;
+                cout << "Pitch = " << pitch << endl;
+                cout << "Yaw = " << yaw << endl;
             }
             else
             {
@@ -444,13 +441,12 @@ int main(void)
                 Point_sphere(inter.x, inter.y, inter.z, 3);
             }
 
-            /////////////////////////////////////////////
-            
+            ///////////////////////////////////////////// ПОЛИГОН
             glColor3f(1, 0, 0);
-            glListBase(9000);
+            glListBase(1000);
             // glViewport(0, 0, 200, 200);
-            glRasterPos2i(20, 20);
-            glCallLists(3, GL_UNSIGNED_BYTE, "fvvvvvvvvvvvffffffffffffffffffffffffffffffffffffffffffffffffffvvvvvvvvvvvvvvvvff");
+            glRasterPos2i(2, 2);
+            glCallLists(1, GL_BYTE, "fvvvff");
             //
             glPointSize(20);
             glBegin(GL_POINTS);
@@ -465,7 +461,7 @@ int main(void)
             glColor3d(0, 1, 0.5);
             //glVertex3d(track.x, track.y, track.z); // первая точка
             //glVertex3d(contact.x, contact.y, contact.z); // первая точка
-            glVertex3d(0, 0, H + R_turn / sin((90 - pitch) * GLOBAL_PI / 180)); // первая точка
+            glVertex3d(0, 0, H + R_turn / cos((pitch) * GLOBAL_PI / 180)); // первая точка
             glVertex3d(turn.x, turn.y, turn.z); // первая точка
             glEnd();
             

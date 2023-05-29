@@ -125,7 +125,7 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 	
 	// Расчет направляющих косинусов прямой с определенным расстоянием
 	a_x = vector_long * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
-	a_y = -vector_long * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
+	a_y = - vector_long * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
 	a_z = H + vector_long * sin(pitch * GLOBAL_PI / 180);
 
 	// Расчет направляющих косинусов исходной прямой
@@ -145,19 +145,46 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 	x_t = m * t;
 	y_t = - n * t;
 	z_t = p * t + H;
+	//cout << "======================================================" << endl;
+	// cout << "Pitch = " << pitch << endl;
+	//cout << "Yaw = " << yaw << endl;
+	//cout << "Sin(Pitch) = " << sin(pitch * GLOBAL_PI / 180) << endl;
+	//cout << "Sin(Yaw) = " << sin(yaw * GLOBAL_PI / 180) << endl;
+	//cout << "Cos(Pitch) = " << cos(pitch * GLOBAL_PI / 180) << endl;
+	//cout << "Cos(Yaw) = " << cos(yaw * GLOBAL_PI / 180) << endl;
+	//cout << "a_x = " << a_x << endl;
+	//cout << "a_y = " << a_y << endl;
+	//cout << "a_z = " << a_z << endl;
+	//cout << "x = " << x_t << endl;
+	//cout << "y = " << y_t << endl;
+	//cout << "z = " << z_t << endl;
+	// Преобразование угла тангажа для обработки
+	if (pitch < 0)
+	{
+		pitch = pitch + ((-(int(pitch) / 360) + 1) * 360);
+	}
 
-	// Расчет расстояния между векторами
-	distance_1 = Disrance_two_vectors(0, 0, H, a_x, a_y, a_z);
-	distance_2 = Disrance_two_vectors(0, 0, H, x_t, y_t, z_t);
+	pitch = pitch - ((int(pitch) / 360) * 360);
 
-	// Выбор оптимального расстояния
-	if (distance_1 < distance_2)
+	if (((pitch * GLOBAL_PI / 180) >= 0) && ((pitch * GLOBAL_PI / 180) <= GLOBAL_PI))
 	{
 		return { a_x, a_y, a_z, false };
 	}
 	else
 	{
-		return { x_t, y_t, z_t, false };
+		// Расчет расстояния между векторами
+		distance_1 = Disrance_two_vectors(0, 0, H, a_x, a_y, a_z);
+		distance_2 = Disrance_two_vectors(0, 0, H, x_t, y_t, z_t);
+
+		// Выбор оптимального расстояния
+		if (distance_2 > distance_1)
+		{
+			return { a_x, a_y, a_z, false };
+		}
+		else
+		{
+			return { x_t, y_t, z_t, false };
+		}
 	}
 }
 /***********************************************************************************
