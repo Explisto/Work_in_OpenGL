@@ -30,7 +30,6 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 	float t_1, t_2;
 	float x_t, y_t, z_t;
 	float y_1, y_2;
-
 	// Определение проекций вектора скорости на оси координат
 	V_x = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
 	V_y = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
@@ -323,7 +322,6 @@ float Angle_two_vectors(float x_1, float y_1, float z_1, float x_2, float y_2, f
 	{
 		return 0;
 	}
-
 	// Нахождение угла между двумя векторами
 	cos_angle = (x_1 * x_2 + y_1 * y_2 + z_1 * z_2) / ((sqrt(pow(x_1, 2) + pow(y_1, 2) + pow(z_1, 2))) * sqrt(pow(x_2, 2) + pow(y_2, 2) + pow(z_2, 2)));
 

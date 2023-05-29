@@ -50,6 +50,16 @@ void Point_sphere(float x, float y, float z, int code_sphere)
     // Возвращение матрицы из стека
     glPopMatrix();
 }
+void Point_sphere_test(float x, float y, float z, int code_sphere, float R_turn)
+{
+    // Сохранение текущей матрицы в стек
+    glPushMatrix();
+    // Перемещение и создание сферы
+    glTranslatef(x, y, z);
+    Draw_sphere_traectory(0.0, 0.0, R_turn, code_sphere);
+    // Возвращение матрицы из стека
+    glPopMatrix();
+}
 /***********************************************************************************
  * @brief Создание полусферы и сетки для нее
  * @param x_sp Координата центра сферы по оси oX
