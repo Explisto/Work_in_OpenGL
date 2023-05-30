@@ -58,14 +58,12 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 		// Одна точка пересечения
 		if (D == 0)
 		{
-			cout << "ПЕРЕСЕЧЕНИЕ С ПОЛУСФЕРОЙ В ОДНОЙ ТОЧКЕ" << endl;
 			t_1 = (-B) / (2 * A);
 			flag_loot = true;
 		}
 		// Две точки пересечения
 		else
 		{
-			cout << "ПЕРЕСЕЧЕНИЕ С ПОЛУСФЕРОЙ В ДВУХ ТОЧКАХ" << endl;
 			t_1 = (-B + sqrt(D)) / (2 * A);
 			t_2 = (-B - sqrt(D)) / (2 * A);
 			flag_loot = false;
@@ -144,19 +142,6 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 	x_t = m * t;
 	y_t = - n * t;
 	z_t = p * t + H;
-	//cout << "======================================================" << endl;
-	// cout << "Pitch = " << pitch << endl;
-	//cout << "Yaw = " << yaw << endl;
-	//cout << "Sin(Pitch) = " << sin(pitch * GLOBAL_PI / 180) << endl;
-	//cout << "Sin(Yaw) = " << sin(yaw * GLOBAL_PI / 180) << endl;
-	//cout << "Cos(Pitch) = " << cos(pitch * GLOBAL_PI / 180) << endl;
-	//cout << "Cos(Yaw) = " << cos(yaw * GLOBAL_PI / 180) << endl;
-	//cout << "a_x = " << a_x << endl;
-	//cout << "a_y = " << a_y << endl;
-	//cout << "a_z = " << a_z << endl;
-	//cout << "x = " << x_t << endl;
-	//cout << "y = " << y_t << endl;
-	//cout << "z = " << z_t << endl;
 	// Преобразование угла тангажа для обработки
 	if (pitch < 0)
 	{
@@ -186,6 +171,7 @@ struct_inter Not_intersection(float pitch, float yaw, float H, float V)
 		}
 	}
 }
+
 /***********************************************************************************
  * @brief Функция расчета начала увода ЛА
  * @param turn_x Координата x - центра окружности ухода ЛА
@@ -233,6 +219,49 @@ struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, f
 	z_1 = p_track * t_turn + c;
 
 	return { x_1, y_1, z_1 };
+}
+
+struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float yaw, float R_turn)
+{
+	float x_1, y_1, z_1;
+	float sum_rad;
+	float buf_x, buf_y, buf_z;
+	sum_rad = R_turn + r_sp;
+	buf_x = 0;
+	buf_y = 0;
+	buf_z = sum_rad;
+	//
+	// { x_sp, y_sp, 0 }
+	// { x_sp, y_sp, sum_rad }
+	// { 0, 0, sum_rad }
+	//
+
+
+	//x_1 = sum_rad * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
+	//y_1 = sum_rad * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
+	//z_1 = sum_rad * sin(pitch * GLOBAL_PI / 180);
+
+	x_1 = x_sp + sum_rad * cos((90 - pitch) * GLOBAL_PI / 180) * cos((90 - yaw) * GLOBAL_PI / 180);
+	y_1 = -y_sp + sum_rad * sin((90 - pitch) * GLOBAL_PI / 180) * cos((90 - yaw) * GLOBAL_PI / 180);
+	z_1 = sum_rad + sum_rad * sin((90 - pitch) * GLOBAL_PI / 180) * sin((90 - yaw) * GLOBAL_PI / 180);
+
+	//buf_x = x_1;
+	//buf_y = y_1;
+	//buf_z = z_1;
+
+	//x_1 = buf_x;
+	//y_1 = buf_y * cos((90 - yaw) * GLOBAL_PI / 180) - buf_z * sin((90 - yaw) * GLOBAL_PI / 180);
+	//z_1 = buf_y * sin((90 - yaw) * GLOBAL_PI / 180) + buf_z * cos((90 - yaw) * GLOBAL_PI / 180);
+
+	//x_1 = buf_x * cos(pitch * GLOBAL_PI / 180) + buf_z * sin(pitch * GLOBAL_PI / 180);
+	//y_1 = buf_y;
+	//z_1 = - buf_x * sin(pitch * GLOBAL_PI / 180) + buf_z * cos(pitch * GLOBAL_PI / 180);
+
+	//x_1 = buf_x * cos((90 - yaw) * GLOBAL_PI / 180) - buf_y * sin((90 - yaw) * GLOBAL_PI / 180);
+	//y_1 = buf_x * sin((90 - yaw) * GLOBAL_PI / 180) - buf_y * cos((90 - yaw) * GLOBAL_PI / 180);
+	//z_1 = buf_z;
+
+	return { x_1, y_1, z_1, true };
 }
 /***********************************************************************************
  * @brief Функция расчета точки касания траектории ЛА
@@ -288,13 +317,10 @@ float Search_R_turn(float H, float V, float pitch, float yaw)
 	cos_roll = atanf(tanf(yaw * GLOBAL_PI / 180) / cosf(pitch * GLOBAL_PI / 180));
 	// Косинус угла крена
 	cos_roll = cosf(cos_roll);
-
-	cout << "Косинус угла крена = " << cos_roll << ";" << endl;
 	// Проверка, возможен ли вираж
 	if ((cos_roll == 1) || (cos_roll == 0) || (cos_roll == -1))
 	{
 		R_turn = 0;
-		cout << "ВИРАЖ НЕВОЗМОЖЕН!!! НЕДОПУСТИМЫЙ УГОЛ КРЕНА!!!" << endl;
 	}
 	else
 	{
@@ -302,7 +328,6 @@ float Search_R_turn(float H, float V, float pitch, float yaw)
 		n_y = 1 / cos_roll;
 		// Нахождение радиуса виража
 		R_turn = (pow(V, 2)) / (GLOBAL_EARTH_ACSELERATION * sqrt(pow(n_y, 2) - 1));
-		cout << "Радиус виража = " << R_turn << " километров;" << endl;
 	}
 
 	return R_turn;

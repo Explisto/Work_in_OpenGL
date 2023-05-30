@@ -67,11 +67,11 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 
 struct_inter Not_intersection(float pitch, float yaw, float H, float V);
 
+struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float yaw, float R_turn);
+
 struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw);
 
 struct_inter Contact_aircraft(float turn_x, float turn_y, float turn_z, float x_radius, float y_radius, float z_radius, float pitch, float yaw, float R_turn, float radius_sphere);
-
-struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw);
 
 //********************************************************************
 // Блок - промежуточные математические расчеты

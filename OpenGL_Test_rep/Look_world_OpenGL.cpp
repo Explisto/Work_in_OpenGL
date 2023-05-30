@@ -56,6 +56,7 @@ void Point_sphere_test(float x, float y, float z, int code_sphere, float R_turn)
     glPushMatrix();
     // Перемещение и создание сферы
     glTranslatef(x, y, z);
+    R_turn = 0.15;
     Draw_sphere_traectory(0.0, 0.0, R_turn, code_sphere);
     // Возвращение матрицы из стека
     glPopMatrix();
@@ -213,6 +214,12 @@ void Draw_sphere_traectory(float x_sp, float y_sp, float r, int code_sphere)
     {
         r = 0.1;
         glColor3f(0.5, 0.5, 0.5);
+    }
+
+    if (code_sphere == 9)
+    {
+        r = 0.15;
+        glColor3f(0.9, 0.2, 0.9);
     }
 
     // Горизонтальная плоскость

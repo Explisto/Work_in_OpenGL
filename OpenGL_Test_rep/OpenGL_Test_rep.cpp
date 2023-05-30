@@ -140,6 +140,10 @@ int main(void)
     int viewportWidth = 600;
     int viewportHeight = 600;
 
+    // Установка буферных переменных для размера окна
+    float buf_h = viewportHeight;
+    float buf_w = viewportWidth;
+
     // Коэффициент масштаба экрана
     float ratio = viewportWidth / viewportHeight;
 
@@ -172,18 +176,6 @@ int main(void)
     }
     // Установка дальности прорисовки сцены
     glFrustum(-1, 1, -1, 1, 1, 80);
-
-    // Сообщение
-    cout << "===================================================" << endl;
-    cout << "!Уход ЛА по круговой траектории!" << endl;
-    cout << "===================================================" << endl;
-
-    // Установка буферных переменных для размера окна
-    float buf_h = viewportHeight;
-    float buf_w = viewportWidth;
-    ///****************************************************************
-    // Математические расчеты пересечения заданной траектории и сферы
-    ///************************************************************
 
     // Основной цикл программы, пока не закрыто окно glfw
     while (!glfwWindowShouldClose(window))
@@ -304,6 +296,14 @@ int main(void)
         // Если произошло изменение входных параметров
         if (flag_console == true)
         {
+            cout << "=========================================================" << endl;
+            cout << "H = " << H_input << endl;
+            cout << "V = " << V_input << endl;
+            cout << "Pitch = " << pitch << endl;
+            cout << "Yaw = " << yaw << endl;
+            cout << "X = " << X_input << endl;
+            cout << "Y = " << Y_input << endl;
+            cout << "R = " << Radius_input << endl;
             // Пересчет значений с учетом коэффициентов
             H = H_input / coefficient_scale_big;
             V = V_input / coefficient_scale_small;
@@ -312,9 +312,10 @@ int main(void)
             radius_sphere = Radius_input / coefficient_scale_big;
             // Нахождение точек пересечения траектории и полусферы
             inter = Intersection_sphere(H, V, pitch, yaw, x_sphere, y_sphere, radius_sphere);
+            // Если происходит пересечение за плоскостью, то отбрасываем его
             if (inter.z < 0)
             {
-
+                inter.flag_inter = false;
             }
             // Установка флага пересечения
             flag_all = inter.flag_inter;
@@ -322,16 +323,6 @@ int main(void)
             R_turn = Search_R_turn(H, V, pitch, yaw);
             // Находим угол между векторами радиуса и траектории
             angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, inter.x, inter.y, 0);
-            cout << "ANGLE = "<< angle_radius << endl;
-            //float beta, gamma, buf;
-            //beta = ((R_turn * sinf(angle_radius * GLOBAL_PI / 180)) / radius_sphere);
-            //cout << "SIN BETA = " << beta << endl;
-            //beta = asinf(beta);
-            //beta = beta / GLOBAL_PI * 180;
-            //cout << beta << " = beta" << endl;
-            //gamma = 180 - beta - angle_radius;
-            //cout << gamma << " = gamma" << endl;
-            //buf = sqrt(abs(R_turn * R_turn + radius_sphere * radius_sphere - 2 * R_turn * radius_sphere * cosf(gamma * GLOBAL_PI / 180)));
             //********************************************************************************
             // Если есть пересечение луча со сферой
             if (inter.flag_inter == true)
@@ -341,12 +332,13 @@ int main(void)
                 bf_y = inter.y;
                 bf_z = inter.z;
                 // Нахождение точки центра окружности
-                inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, R_turn +  radius_sphere);
-                // inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere * sqrt(2) * cos((90 - yaw) * GLOBAL_PI / 180), y_sphere * sqrt(2) * sin((90 - yaw) * GLOBAL_PI / 180), R_turn + radius_sphere);
                 // inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, R_turn +  radius_sphere);
+                // inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere * sqrt(2) * cos((90 - yaw) * GLOBAL_PI / 180), y_sphere * sqrt(2) * sin((90 - yaw) * GLOBAL_PI / 180), R_turn + radius_sphere);
+                inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, R_turn +  radius_sphere);
                 turn.x = inter.x;
                 turn.y = inter.y;
                 turn.z = inter.z;
+                // turn = Angle_turn(x_sphere, y_sphere, radius_sphere, pitch, yaw, R_turn);
                 turn.flag_turn = inter.flag_inter;
                 // Нахождение координат точки начала увода ЛА
                 track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
@@ -356,48 +348,11 @@ int main(void)
                 contact.x = inter.x;
                 contact.y = inter.y;
                 contact.z = inter.z;
+                // Возвращение значений
                 inter.x = bf_x;
                 inter.y = bf_y;
                 inter.z = bf_z;
             }
-            // Сообщения ЛА
-            cout << "Пересечение со сферой - ";
-            if (flag_all == true)
-            {
-                cout << "Да; ЭТО НАЧАЛО" << endl;
-                cout << "Pitch = " << pitch << endl;
-                cout << "Yaw = " << yaw << endl;
-                cout << "===================================================" << endl;
-                cout << "Координаты точки пересечения траектории ЛА и сферы:" << endl;
-                cout << "x_inter = " << inter.x << ";" << endl;
-                cout << "y_inter = " << inter.y << ";" << endl;
-                cout << "z_inter = " << inter.z << ";" << endl;
-                cout << "===================================================" << endl;
-                cout << "Координаты центра окружности ухода ЛА:" << endl;
-                cout << "x_turn = " << turn.x << ";" << endl;
-                cout << "y_turn = " << turn.y << ";" << endl;
-                cout << "z_turn = " << turn.z << ";" << endl;
-                cout << "===================================================" << endl;
-                cout << "Координаты точки пересечения траектории ЛА и полусферы:" << endl;
-                cout << "x_contact = " << contact.x << ";" << endl;
-                cout << "y_contact = " << contact.y << ";" << endl;
-                cout << "z_contact = " << contact.z << ";" << endl;
-                cout << "===================================================" << endl;
-                cout << "Координаты точки начала ухода ЛА по круговой траектории:" << endl;
-                cout << "x_track = " << track.x << ";" << endl;
-                cout << "y_track = " << track.y << ";" << endl;
-                cout << "z_track = " << track.z << ";" << endl;
-                cout << "===================================================" << endl;
-                cout << "Pitch = " << pitch << endl;
-                cout << "Yaw = " << yaw << endl;
-                cout << "H = " << H << endl;
-            }
-            else
-            {
-                cout << "Нет;" << endl;
-            }
-            cout << "===================================================" << endl;
-
             //********************************************************************************
         }
         // Установка цвета фона
@@ -419,6 +374,7 @@ int main(void)
             // Отрисовка направляющих стрелок на осях
             Cursors();
             // Сфера - пересечение траектории и сферы
+            // Point_sphere(turn.x, turn.y, turn.z, 2);
             // Point_sphere(contact.x, contact.y, contact.z, 2);
             // Рисование полусферы
             Draw_sphere(x_sphere, -y_sphere, radius_sphere);
@@ -426,20 +382,17 @@ int main(void)
             Show_plane();
             // Точка пересечения со сферой
             Point_sphere(bf_x, bf_y, bf_z, 2);
-            Point_sphere_test(turn.x, turn.y, turn.z, 8, R_turn);
+            // Point_sphere_test(turn.x, turn.y, turn.z, 8, R_turn);
             // Нахождение координат конечной точки движения ЛА
             inter = Not_intersection(pitch, yaw, H, V);
             // Построение конечной точки ЛА
             Point_sphere(inter.x, inter.y, inter.z, 1);
             // Построение конечной точки ЛА
             Point_sphere(track.x, track.y, track.z, 5);
-            // Построение центра полусферы
-            // cout << "ЭТО ТЕБЕ" << 4 * cos((90 - yaw) * GLOBAL_PI / 180) << "F" << -4 * sin((90 - yaw) * GLOBAL_PI / 180) << endl;
-            Point_sphere(x_sphere * sqrt(2) * cos((90 - yaw) * GLOBAL_PI / 180), -y_sphere * sqrt(2) * sin((90 - yaw) * GLOBAL_PI / 180), 0, 4);
             // Отображение траектории ЛА
             Aircraft_traectory(H, inter.x, inter.y, inter.z);
             // Включение отрисовки
-            // glEnable(GL_DEPTH_TEST);
+            glEnable(GL_DEPTH_TEST);
             // Построение конечной точки ЛА
             Point_sphere(track.x, track.y, track.z, 5);
             //glDisable(GL_DEPTH_TEST);
@@ -451,34 +404,9 @@ int main(void)
             }
             else
             {
+                // Отрисовка конечной точки траектории ЛА
                 Point_sphere(inter.x, inter.y, inter.z, 3);
             }
-
-            ///////////////////////////////////////////// ПОЛИГОН
-            glColor3f(1, 0, 0);
-            glListBase(1000);
-            // glViewport(0, 0, 200, 200);
-            glRasterPos2i(2, 2);
-            glCallLists(1, GL_BYTE, "fvvvff");
-            //
-            glPointSize(20);
-            glBegin(GL_POINTS);
-            glColor3d(1, 0, 0);
-            glVertex3d(track.x, track.y, track.z); // первая точка
-            glVertex3d(contact.x, contact.y, contact.z); // первая точка
-            glColor3d(0, 1, 0.5);
-            glVertex3d(turn.x, turn.y, turn.z); // первая точка
-            glEnd();
-
-            glBegin(GL_LINES);
-            glColor3d(0, 1, 0.5);
-            //glVertex3d(track.x, track.y, track.z); // первая точка
-            //glVertex3d(contact.x, contact.y, contact.z); // первая точка
-            glVertex3d(0, 0, H + R_turn / cos((pitch) * GLOBAL_PI / 180)); // первая точка
-            glVertex3d(turn.x, turn.y, turn.z); // первая точка
-            glEnd();
-            
-            ////////////////////////////////////////////////////////////
             // Возвращение матрицы из стека
             glPopMatrix();
         }
