@@ -332,12 +332,6 @@ int main(void)
                 bf_y = inter.y;
                 bf_z = inter.z;
                 // Нахождение точки центра окружности
-                // inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, R_turn +  radius_sphere);
-                // inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere * sqrt(2) * cos((90 - yaw) * GLOBAL_PI / 180), y_sphere * sqrt(2) * sin((90 - yaw) * GLOBAL_PI / 180), R_turn + radius_sphere);
-                inter = Intersection_sphere(H + R_turn / cos((pitch) * GLOBAL_PI / 180), V, pitch, yaw, x_sphere, y_sphere, R_turn +  radius_sphere);
-                turn.x = inter.x;
-                turn.y = inter.y;
-                turn.z = inter.z;
                 // turn = Angle_turn(x_sphere, y_sphere, radius_sphere, pitch, yaw, R_turn);
                 turn.flag_turn = inter.flag_inter;
                 // Нахождение координат точки начала увода ЛА

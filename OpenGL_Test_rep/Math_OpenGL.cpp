@@ -227,27 +227,6 @@ struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float ya
 	float sum_rad;
 	float buf_x, buf_y, buf_z;
 	sum_rad = R_turn + r_sp;
-	buf_x = 0;
-	buf_y = 0;
-	buf_z = sum_rad;
-	//
-	// { x_sp, y_sp, 0 }
-	// { x_sp, y_sp, sum_rad }
-	// { 0, 0, sum_rad }
-	//
-
-
-	//x_1 = sum_rad * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
-	//y_1 = sum_rad * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
-	//z_1 = sum_rad * sin(pitch * GLOBAL_PI / 180);
-
-	x_1 = x_sp + sum_rad * cos((90 - pitch) * GLOBAL_PI / 180) * cos((90 - yaw) * GLOBAL_PI / 180);
-	y_1 = -y_sp + sum_rad * sin((90 - pitch) * GLOBAL_PI / 180) * cos((90 - yaw) * GLOBAL_PI / 180);
-	z_1 = sum_rad + sum_rad * sin((90 - pitch) * GLOBAL_PI / 180) * sin((90 - yaw) * GLOBAL_PI / 180);
-
-	//buf_x = x_1;
-	//buf_y = y_1;
-	//buf_z = z_1;
 
 	//x_1 = buf_x;
 	//y_1 = buf_y * cos((90 - yaw) * GLOBAL_PI / 180) - buf_z * sin((90 - yaw) * GLOBAL_PI / 180);
