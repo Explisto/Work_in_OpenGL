@@ -186,10 +186,11 @@ void Draw_sphere_traectory(float x_sp, float y_sp, float r, int code_sphere)
         glColor3f(0.0, 1.0, 0.0);
         r = 0.05;
     }
-    // —фера - пересечение с полусферой - 2 точка (неактивно)
+    // —фера - пересечение с полусферой - 2 точка
     if (code_sphere == 3)
     {
-        glColor3f(1.0, 0.0, 1.0);
+        glColor3f(0.0, 1.0, 0.0);
+        r = 0.05;
     }
     // —фера - центр полусферы
     if (code_sphere == 4)

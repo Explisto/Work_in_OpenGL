@@ -67,7 +67,7 @@ struct_inter Intersection_sphere(float H, float V, float pitch, float yaw, float
 
 struct_inter Not_intersection(float pitch, float yaw, float H, float V);
 
-struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float yaw, float R_turn);
+struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float yaw, float R_turn, float V, float x_inter, float y_inter, float z_inter, float H);
 
 struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw);
 

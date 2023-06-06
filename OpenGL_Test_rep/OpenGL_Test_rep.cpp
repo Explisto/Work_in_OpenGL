@@ -171,11 +171,11 @@ int main(void)
     // Проверка инициализации библиотеки GLEW
     if (glewInit() != GLEW_OK)
     {
-        cout << "GLEW is not\n";
+        cout << "GLEW is not!" << endl;
         return -1;
     }
     // Установка дальности прорисовки сцены
-    glFrustum(-1, 1, -1, 1, 1, 80);
+    glFrustum(-1, 1, -1, 1, 1, 50);
 
     // Основной цикл программы, пока не закрыто окно glfw
     while (!glfwWindowShouldClose(window))
@@ -233,9 +233,9 @@ int main(void)
         {
             flag_console = true;
             V_input = V_input + (V_delta * sign_delta);
-            if (V_input < 150)
+            if (V_input < 400)
             {
-                V_input = 150;
+                V_input = 400;
             }
             if (V_input > 1000)
             {
@@ -332,16 +332,19 @@ int main(void)
                 bf_y = inter.y;
                 bf_z = inter.z;
                 // Нахождение точки центра окружности
-                // turn = Angle_turn(x_sphere, y_sphere, radius_sphere, pitch, yaw, R_turn);
+                turn = Angle_turn(x_sphere, y_sphere, radius_sphere, pitch, yaw, R_turn, V, inter.x, inter.y, inter.z, H);
+                cout << "turn.x = " << turn.x << endl;
+                cout << "turn.y = " << turn.y << endl;
+                cout << "turn.z = " << turn.z << endl;
                 turn.flag_turn = inter.flag_inter;
                 // Нахождение координат точки начала увода ЛА
                 track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
+                cout << "track.x = " << track.x << endl;
+                cout << "track.y = " << track.y << endl;
+                cout << "track.z = " << track.z << endl;
                 // Нахождение точки контакта сферы и окружности
                 angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, turn.x, turn.y, 0);
                 inter = Contact_aircraft(turn.x, turn.y, turn.z, x_sphere, -y_sphere, 0, pitch, yaw, R_turn, radius_sphere);
-                contact.x = inter.x;
-                contact.y = inter.y;
-                contact.z = inter.z;
                 // Возвращение значений
                 inter.x = bf_x;
                 inter.y = bf_y;
@@ -353,7 +356,6 @@ int main(void)
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         // Очистка буфера цвета и глубин
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         // Если есть пересечение сферы и луча
         if ((flag_all == true) && (R_turn != 0))
         {
@@ -368,7 +370,8 @@ int main(void)
             // Отрисовка направляющих стрелок на осях
             Cursors();
             // Сфера - пересечение траектории и сферы
-            // Point_sphere(turn.x, turn.y, turn.z, 2);
+            Point_sphere(turn.x, turn.y, turn.z, 2);
+            // Точка касания окружности и сферы
             // Point_sphere(contact.x, contact.y, contact.z, 2);
             // Рисование полусферы
             Draw_sphere(x_sphere, -y_sphere, radius_sphere);
@@ -377,12 +380,20 @@ int main(void)
             // Точка пересечения со сферой
             Point_sphere(bf_x, bf_y, bf_z, 2);
             // Point_sphere_test(turn.x, turn.y, turn.z, 8, R_turn);
+
             // Нахождение координат конечной точки движения ЛА
             inter = Not_intersection(pitch, yaw, H, V);
-            // Построение конечной точки ЛА
+            if ((x_inter_2 != 0) && (y_inter_2 != 0) && (z_inter_2 != 0) && (z_inter_2 >= 0))
+            {
+                // Построение конечной точки ЛА
+                Point_sphere(x_inter_2, y_inter_2, z_inter_2, 3);
+            }
+            // Построение второй точки пересечения сферы и ЛА
             Point_sphere(inter.x, inter.y, inter.z, 1);
             // Построение конечной точки ЛА
             Point_sphere(track.x, track.y, track.z, 5);
+            // Построение центра полусферы
+            Point_sphere(x_sphere, -y_sphere, 0, 4);
             // Отображение траектории ЛА
             Aircraft_traectory(H, inter.x, inter.y, inter.z);
             // Включение отрисовки
