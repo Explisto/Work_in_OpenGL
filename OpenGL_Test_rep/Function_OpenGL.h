@@ -71,7 +71,7 @@ struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float ya
 
 struct_track Track_aircraft(float turn_x, float turn_y, float turn_z, float H, float V, float pitch, float yaw);
 
-struct_inter Contact_aircraft(float turn_x, float turn_y, float turn_z, float x_radius, float y_radius, float z_radius, float pitch, float yaw, float R_turn, float radius_sphere);
+struct_contact Contact_turn(float x_sp, float y_sp, float r_sp, float pitch, float yaw, float R_turn, float V, float x_inter, float y_inter, float z_inter, float H);
 
 //********************************************************************
 // Блок - промежуточные математические расчеты

@@ -261,42 +261,42 @@ struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float ya
 	float x_inter_op, y_inter_op, z_inter_op;
 	float angle_sp;
 
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	y_sp = -y_sp;
-	cout << "R_TURN = " << R_turn << endl;
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	// Расчет направляющих косинусов прямой
 	m_turn = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
 	n_turn = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
 	p_turn = V * sin(pitch * GLOBAL_PI / 180);
 
-	if (p_turn != 0)
+	cout << p_turn << endl;
+	if (p_turn == 0)
+	{
+		return { 0, 0, 0 };
+	}
+	if (p_turn < 0)
 	{
 		// Расчет координат точки пересечения прямой и плоскости z = 0
 		t = -H / p_turn;
-		cout << "t = " << t << endl;
 		// Расчет координат точки A
 		x_1 = m_turn * t;
 		y_1 = -n_turn * t;
 		z_1 = p_turn * t + H;
-
-		r_1 = Disrance_two_vectors(x_inter, y_inter, z_inter, x_inter_2, y_inter_2, z_inter_2);
-		r_2 = Disrance_two_vectors(x_1, y_1, z_1, x_inter_2, y_inter_2, z_inter_2);
-		r_3 = Disrance_two_vectors(x_1, y_1, z_1, x_inter, y_inter, z_inter);
 	}
 	else
 	{
-		p_turn = 1;
+		// Расчет координат точки пересечения прямой и плоскости z = 0
+		t = (12 - H) / p_turn;
+		// Расчет координат точки A
+		x_1 = m_turn * t;
+		y_1 = -n_turn * t;
+		z_1 = p_turn * t + H;
 	}
 
+	// Расчет сторон треугольника BOQ
+	r_1 = Disrance_two_vectors(x_inter, y_inter, z_inter, x_inter_2, y_inter_2, z_inter_2);
+	r_2 = Disrance_two_vectors(x_1, y_1, z_1, x_inter_2, y_inter_2, z_inter_2);
+	r_3 = Disrance_two_vectors(x_1, y_1, z_1, x_inter, y_inter, z_inter);
 
-	//if (r_2 > r_3)
-	//{
-	//	buf_r = r_2;
-	//	r_2 = r_3;
-	//	r_3 = buf_r;
-	//}
 	angle_sp = Angle_two_vectors(x_sp, y_sp, 0, 0, -1, 0);
 	// Угол наклона прямой к плоскости OXY
 	tetta = abs(pitch);
@@ -304,38 +304,23 @@ struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float ya
 	// Проверка, точка А лежит внути сферы
 	flag_inter = powf((x_1 - x_sp), 2) + powf((y_1 - y_sp), 2) + powf((z_1 - 0.0), 2);
 
-	cout << "S = " << flag_inter << endl;
-
 	// Если точка внутри сферы
 	if (flag_inter > powf(r_sp, 2))
 	{
 		OK = (r_2 + (r_1 / 2)) * abs(tanf(tetta * GLOBAL_PI / 180));
-		cout << "OK = " << OK << endl;
 	}
 	// Если внутри сферы
 	else
 	{
 		OK = ((r_1 / 2) - r_2) * abs(tanf(tetta * GLOBAL_PI / 180));
-		cout << "OK = " << OK << endl;
 	}
-
-	cout << "===============================" << endl;
-	cout << "r_1 = " << r_1 << endl;
-	cout << "r_2 = " << r_2 << endl;
-	cout << "r_3 = " << r_3 << endl;
-
-	//===============================================================================
 	yaw = yaw * GLOBAL_PI / 180;
-	//===============================================================================
 
 	R_1 = sqrt(powf(OK, 2) + powf((r_1 / 2), 2));
-	cout << "R_1 = " << R_1 << endl;
 
 	ON = (OK * (R_1 + R_turn)) / (OK + R_turn);
-	cout << "ON = " << ON << endl;
 
 	fi = acosf(OK / ON) * 180 / GLOBAL_PI;
-	cout << "fi = " << fi << endl;
 
 	//===============================================================================
 
@@ -350,47 +335,23 @@ struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float ya
 
 	h = (abs(A * x_sp + B * y_sp + C * 0 + D)) / (sqrt(powf(A, 2) + powf(B, 2) + powf(C, 2)));
 
-	cout << "h = " << h << endl;
-	//===============================================================================
-	// ==============================================
 	beta = 90 + tetta - fi;
-	cout << "Betta = " << beta << endl;
 
-	cout << "BETA > 90" << endl;
 	angle_1 = (beta - 90) * GLOBAL_PI / 180;
 	angle_2 = GLOBAL_PI / 2 - yaw;
-	// ==============================================
-	cout << "angle_1 = " << angle_1 / GLOBAL_PI * 180 << endl;
-	cout << "angle_2 = " << angle_2 / GLOBAL_PI * 180 << endl;
-	// ==============================================
+
 	x_0_0 = 0;
 	y_0_0 = 0;
 	z_0_0 = R_1 + R_turn;
-
-	cout << "X_0 = " << x_0_0 << endl;
-	cout << "Y_0 = " << y_0_0 << endl;
-	cout << "Z_0 = " << z_0_0 << endl;
 
 	x_1_1 = x_0_0 * cos(angle_1) + z_0_0 * sin(angle_1);
 	y_1_1 = y_0_0;
 	z_1_1 = x_0_0 * sin(angle_1) + z_0_0 * cos(angle_1);
 
-	cout << "X_1 = " << x_1_1 << endl;
-	cout << "Y_1 = " << y_1_1 << endl;
-	cout << "Z_1 = " << z_1_1 << endl;
-
 	x_2_2 = (x_1_1 * cos(angle_2) - y_1_1 * sin(angle_2));
 	y_2_2 = -(x_1_1 * sin(angle_2) + y_1_1 * cos(angle_2));
 	z_2_2 = z_1_1;
 
-	// ==============================================
-
-	cout << "X_2 = " << x_2_2 << endl;
-	cout << "Y_2 = " << y_2_2 << endl;
-	cout << "Z_2 = " << z_2_2 << endl;
-
-	// if (yaw > GLOBAL_PI / 4)
-	cout << "ANGLE_sp = " << angle_sp << endl;
 	if ((angle_sp - yaw / GLOBAL_PI * 180) <= 0)
 	{
 		x_3_3 = x_2_2 + h * cos(yaw);
@@ -404,17 +365,9 @@ struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float ya
 		z_3_3 = z_2_2;
 	}
 
-	cout << "X_3 = " << x_3_3 << endl;
-	cout << "Y_3 = " << y_3_3 << endl;
-	cout << "Z_3 = " << z_3_3 << endl;
-
 	x_4_4 = x_3_3 + x_sp;
 	y_4_4 = y_3_3 + y_sp;
 	z_4_4 = z_3_3;
-
-	cout << "X_4 = " << x_4_4 << endl;
-	cout << "Y_4 = " << y_4_4 << endl;
-	cout << "Z_4 = " << z_4_4 << endl;
 
 	return { x_4_4, y_4_4, z_4_4, true };
 }
@@ -430,26 +383,144 @@ struct_turn Angle_turn(float x_sp, float y_sp, float r_sp, float pitch, float ya
  * @param R_turn Радиус окружности увода ЛА
  * @return Координаты касания траектории ЛА
 ***********************************************************************************/
-struct_inter Contact_aircraft(float turn_x, float turn_y, float turn_z, float x_radius, float y_radius, float z_radius, float pitch, float yaw, float R_turn, float radius_sphere)
+struct_contact Contact_turn(float x_sp, float y_sp, float r_sp, float pitch, float yaw, float R_turn, float V, float x_inter, float y_inter, float z_inter, float H)
 {
-	// Объявление переменных - координат итоговых точек
 	float x_1, y_1, z_1;
-	// Коэффициент пропорциональности отрезка
-	float coeff_p = R_turn / radius_sphere;
+	float sum_rad;
+	float buf_x, buf_y, buf_z;
+	float m_turn, n_turn, p_turn;
+	float flag_inter = 0;
+	float t;
+	float AB, BQ, OK;
+	float tetta;
+	float ON;
+	float R_1;
+	float fi;
+	float beta;
+	float h;
+	float buf_r;
+	float AQ;
+	float r_1, r_2, r_3;
+	float cos_fi;
+	float angle_1;
+	float angle_2;
+	float A, B, C, D;
+	float x_0_0, y_0_0, z_0_0;
+	float x_1_1, y_1_1, z_1_1;
+	float x_2_2, y_2_2, z_2_2;
+	float x_3_3, y_3_3, z_3_3;
+	float x_4_4, y_4_4, z_4_4;
+	float x_inter_op, y_inter_op, z_inter_op;
+	float angle_sp;
 
-	//x_1 = (turn_x + coeff_p * x_radius) / (1 + coeff_p);
-	//y_1 = (turn_y + coeff_p * y_radius) / (1 + coeff_p);
-	//z_1 = (turn_z + coeff_p * z_radius) / (1 + coeff_p);
+	y_sp = -y_sp;
 
-	//x_1 = (turn_x * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180) + coeff_p * x_radius) / (1 + coeff_p);
-	//y_1 = (turn_y * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180) + coeff_p * y_radius) / (1 + coeff_p);
-	//z_1 = (turn_z + coeff_p * z_radius) / (1 + coeff_p);
+	// Расчет направляющих косинусов прямой
+	m_turn = V * cos(pitch * GLOBAL_PI / 180) * sin(yaw * GLOBAL_PI / 180);
+	n_turn = V * cos(pitch * GLOBAL_PI / 180) * cos(yaw * GLOBAL_PI / 180);
+	p_turn = V * sin(pitch * GLOBAL_PI / 180);
 
-	x_1 = (turn_x + coeff_p * x_radius) / (1 + coeff_p);
-	y_1 = (turn_y + coeff_p * y_radius) / (1 + coeff_p);
-	z_1 = (turn_z + coeff_p * z_radius) / (1 + coeff_p);
+	if (p_turn == 0)
+	{
+		return { 0, 0, 0 };
+	}
+	if (p_turn < 0)
+	{
+		// Расчет координат точки пересечения прямой и плоскости z = 0
+		t = -H / p_turn;
+		// Расчет координат точки A
+		x_1 = m_turn * t;
+		y_1 = -n_turn * t;
+		z_1 = p_turn * t + H;
+	}
+	else
+	{
+		// Расчет координат точки пересечения прямой и плоскости z = 0
+		t = (12 - H) / p_turn;
+		// Расчет координат точки A
+		x_1 = m_turn * t;
+		y_1 = -n_turn * t;
+		z_1 = p_turn * t + H;
+	}
 
-	return { x_1, y_1, z_1 };
+	// Расчет сторон треугольника BOQ
+	r_1 = Disrance_two_vectors(x_inter, y_inter, z_inter, x_inter_2, y_inter_2, z_inter_2);
+	r_2 = Disrance_two_vectors(x_1, y_1, z_1, x_inter_2, y_inter_2, z_inter_2);
+	r_3 = Disrance_two_vectors(x_1, y_1, z_1, x_inter, y_inter, z_inter);
+
+	angle_sp = Angle_two_vectors(x_sp, y_sp, 0, 0, -1, 0);
+	// Угол наклона прямой к плоскости OXY
+	tetta = abs(pitch);
+
+	// Проверка, точка А лежит внути сферы
+	flag_inter = powf((x_1 - x_sp), 2) + powf((y_1 - y_sp), 2) + powf((z_1 - 0.0), 2);
+
+	// Если точка внутри сферы
+	if (flag_inter > powf(r_sp, 2))
+	{
+		OK = (r_2 + (r_1 / 2)) * abs(tanf(tetta * GLOBAL_PI / 180));
+	}
+	// Если внутри сферы
+	else
+	{
+		OK = ((r_1 / 2) - r_2) * abs(tanf(tetta * GLOBAL_PI / 180));
+	}
+	yaw = yaw * GLOBAL_PI / 180;
+
+	R_1 = sqrt(powf(OK, 2) + powf((r_1 / 2), 2));
+
+	ON = (OK * (R_1 + R_turn)) / (OK + R_turn);
+
+	fi = acosf(OK / ON) * 180 / GLOBAL_PI;
+
+	//===============================================================================
+
+	x_inter_3 = x_inter;
+	y_inter_3 = y_inter;
+	z_inter_3 = z_inter + 1;
+
+	A = (y_inter_2 - y_inter) * (z_inter_3 - z_inter) - (z_inter_2 - z_inter) * (y_inter_3 - y_inter);
+	B = (z_inter_2 - z_inter) * (x_inter_3 - x_inter) - (x_inter_2 - x_inter) * (z_inter_3 - z_inter);
+	C = (x_inter_2 - x_inter) * (y_inter_3 - y_inter) - (y_inter_2 - y_inter) * (x_inter_3 - x_inter);
+	D = -(A * x_inter + B * y_inter + C * z_inter);
+
+	h = (abs(A * x_sp + B * y_sp + C * 0 + D)) / (sqrt(powf(A, 2) + powf(B, 2) + powf(C, 2)));
+
+	beta = 90 + tetta - fi;
+
+	angle_1 = (beta - 90) * GLOBAL_PI / 180;
+	angle_2 = GLOBAL_PI / 2 - yaw;
+
+	x_0_0 = 0;
+	y_0_0 = 0;
+	z_0_0 = R_1;
+
+	x_1_1 = x_0_0 * cos(angle_1) + z_0_0 * sin(angle_1);
+	y_1_1 = y_0_0;
+	z_1_1 = x_0_0 * sin(angle_1) + z_0_0 * cos(angle_1);
+
+	x_2_2 = (x_1_1 * cos(angle_2) - y_1_1 * sin(angle_2));
+	y_2_2 = -(x_1_1 * sin(angle_2) + y_1_1 * cos(angle_2));
+	z_2_2 = z_1_1;
+
+	if ((angle_sp - yaw / GLOBAL_PI * 180) <= 0)
+	{
+		x_3_3 = x_2_2 + h * cos(yaw);
+		y_3_3 = y_2_2 + h * sin(yaw);
+		z_3_3 = z_2_2;
+	}
+	else
+	{
+		x_3_3 = x_2_2 - h * cos(yaw);
+		y_3_3 = y_2_2 - h * sin(yaw);
+		z_3_3 = z_2_2;
+	}
+
+	x_4_4 = x_3_3 + x_sp;
+	y_4_4 = y_3_3 + y_sp;
+	z_4_4 = z_3_3;
+
+	return { x_4_4, y_4_4, z_4_4 };
 }
 
 /***********************************************************************************

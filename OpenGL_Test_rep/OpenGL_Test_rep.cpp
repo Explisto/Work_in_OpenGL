@@ -333,18 +333,12 @@ int main(void)
                 bf_z = inter.z;
                 // Нахождение точки центра окружности
                 turn = Angle_turn(x_sphere, y_sphere, radius_sphere, pitch, yaw, R_turn, V, inter.x, inter.y, inter.z, H);
-                cout << "turn.x = " << turn.x << endl;
-                cout << "turn.y = " << turn.y << endl;
-                cout << "turn.z = " << turn.z << endl;
                 turn.flag_turn = inter.flag_inter;
                 // Нахождение координат точки начала увода ЛА
                 track = Track_aircraft(turn.x, turn.y, turn.z, H, V, pitch, yaw);
-                cout << "track.x = " << track.x << endl;
-                cout << "track.y = " << track.y << endl;
-                cout << "track.z = " << track.z << endl;
                 // Нахождение точки контакта сферы и окружности
                 angle_radius = Angle_two_vectors(x_sphere, -y_sphere, 0, turn.x, turn.y, 0);
-                inter = Contact_aircraft(turn.x, turn.y, turn.z, x_sphere, -y_sphere, 0, pitch, yaw, R_turn, radius_sphere);
+                contact = Contact_turn(x_sphere, y_sphere, radius_sphere, pitch, yaw, R_turn, V, inter.x, inter.y, inter.z, H);
                 // Возвращение значений
                 inter.x = bf_x;
                 inter.y = bf_y;
@@ -372,7 +366,7 @@ int main(void)
             // Сфера - пересечение траектории и сферы
             Point_sphere(turn.x, turn.y, turn.z, 2);
             // Точка касания окружности и сферы
-            // Point_sphere(contact.x, contact.y, contact.z, 2);
+            Point_sphere(contact.x, contact.y, contact.z, 6);
             // Рисование полусферы
             Draw_sphere(x_sphere, -y_sphere, radius_sphere);
             // Отрисовка плоскости
